@@ -1,0 +1,129 @@
+.archive-page {
+  min-height: calc(100vh - 200px);
+}
+
+.archive-header {
+  background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background) 100%);
+  padding: var(--spacing-2xl) 0;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.archive-header h1 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.archive-search {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.archive-search .search-input-wrapper {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--background-card);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.archive-search .search-input-wrapper svg {
+  color: var(--text-secondary);
+}
+
+.archive-search .search-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+}
+
+.filters-panel {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filters-panel h3 {
+  margin-bottom: var(--spacing-lg);
+  font-size: 1.2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.filters-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.archive-content {
+  padding: var(--spacing-2xl) 0;
+}
+
+.results-count {
+  margin-bottom: var(--spacing-lg);
+}
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  background: var(--background-card);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-lg);
+}
+
+@media (max-width: 768px) {
+  .archive-search {
+    flex-direction: column;
+  }
+
+  .archive-search .search-input-wrapper {
+    min-width: 100%;
+  }
+
+  .filters-actions {
+    flex-direction: column;
+  }
+
+  .filters-actions .btn {
+    width: 100%;
+  }
+
+  .cases-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

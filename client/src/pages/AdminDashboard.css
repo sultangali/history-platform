@@ -1,0 +1,128 @@
+.admin-page {
+  padding: var(--spacing-2xl) 0;
+  min-height: calc(100vh - 200px);
+}
+
+.admin-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.users-section {
+  margin-top: var(--spacing-2xl);
+}
+
+.users-section h2 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.users-table-wrapper {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table thead {
+  background: var(--background-secondary);
+}
+
+.users-table th,
+.users-table td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.users-table th {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.users-table tbody tr:hover {
+  background: var(--background-secondary);
+}
+
+.badge-user {
+  background: rgba(52, 152, 219, 0.2);
+  color: #2980b9;
+}
+
+.badge-moderator {
+  background: rgba(243, 156, 18, 0.2);
+  color: var(--warning);
+}
+
+.badge-admin {
+  background: rgba(231, 76, 60, 0.2);
+  color: var(--error);
+}
+
+.badge-active {
+  background: rgba(39, 174, 96, 0.2);
+  color: var(--success);
+}
+
+.badge-blocked {
+  background: rgba(192, 57, 43, 0.2);
+  color: var(--error);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.role-select {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  background: var(--background-card);
+  transition: var(--transition);
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #229954;
+}
+
+.btn-danger {
+  background: var(--error);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #a93226;
+}
+
+@media (max-width: 768px) {
+  .users-table {
+    font-size: 0.9rem;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: var(--spacing-sm);
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+

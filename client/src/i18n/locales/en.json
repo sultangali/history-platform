@@ -1,0 +1,131 @@
+{
+  "app": {
+    "title": "Karaganda Region - Political Repression Archive",
+    "subtitle": "Research. Archive Documents. Memories"
+  },
+  "nav": {
+    "home": "Home",
+    "archive": "Archive",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Political Repression in Karaganda Region",
+    "description": "Database of historical documents and information about repressed persons",
+    "searchPlaceholder": "Enter person's name...",
+    "search": "Search"
+  },
+  "filters": {
+    "title": "Filters",
+    "location": "Location",
+    "year": "Year",
+    "yearFrom": "From year",
+    "yearTo": "To year",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "cases": {
+    "title": "Cases Catalog",
+    "noResults": "No results found",
+    "loading": "Loading...",
+    "viewDetails": "View Details",
+    "caseNumber": "Case №",
+    "date": "Date",
+    "location": "Location",
+    "victims": "Repressed Persons",
+    "description": "Description"
+  },
+  "caseDetail": {
+    "backToArchive": "Back to Archive",
+    "information": "Case Information",
+    "documents": "Documents",
+    "suggestEdit": "Suggest Edit",
+    "reportError": "Report Error"
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "registerTitle": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "login": "Login",
+    "register": "Register",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Have an account?",
+    "registerLink": "Register",
+    "loginLink": "Login"
+  },
+  "moderator": {
+    "dashboard": "Moderator Dashboard",
+    "addCase": "Add New Case",
+    "editCase": "Edit Case",
+    "suggestions": "Edit Suggestions",
+    "complaints": "Complaints and Suggestions",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "users": "Users",
+    "moderators": "Moderators",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "makeAdmin": "Make Admin",
+    "makeModerator": "Make Moderator",
+    "makeUser": "Make User",
+    "block": "Block",
+    "unblock": "Unblock"
+  },
+  "form": {
+    "required": "Required field",
+    "caseTitle": "Case Title",
+    "caseDescription": "Case Description",
+    "location": "Location",
+    "district": "District",
+    "region": "Region",
+    "dateFrom": "Start Date",
+    "dateTo": "End Date",
+    "year": "Year",
+    "victims": "Repressed Persons",
+    "addVictim": "Add Person",
+    "fullName": "Full Name",
+    "removeVictim": "Remove",
+    "documents": "Documents",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit"
+  },
+  "feedback": {
+    "title": "Complaints and Suggestions",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "thankYou": "Thank you for your message!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Successfully completed",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back"
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "copyright": "© 2025 Karaganda Region Archive. All rights reserved."
+  }
+}
+

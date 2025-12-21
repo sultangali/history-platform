@@ -1,0 +1,174 @@
+.case-detail-page {
+  padding: var(--spacing-2xl) 0;
+  min-height: calc(100vh - 200px);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-lg);
+  transition: var(--transition);
+}
+
+.btn-back:hover {
+  color: var(--accent-color);
+}
+
+.case-detail-card {
+  padding: var(--spacing-2xl);
+}
+
+.case-detail-header {
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: var(--spacing-xl);
+}
+
+.case-detail-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.case-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.meta-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius);
+}
+
+.meta-item svg {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.meta-item strong {
+  display: block;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.meta-item p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.case-section {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.case-section:last-child {
+  border-bottom: none;
+}
+
+.case-section h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.case-section h2 svg {
+  color: var(--accent-color);
+}
+
+.victims-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.victim-item {
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius);
+  border-left: 3px solid var(--accent-color);
+}
+
+.case-description {
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+}
+
+.documents-list {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.document-item {
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.document-item:hover {
+  background: var(--background);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.case-detail-footer {
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--border-color);
+  margin-top: var(--spacing-xl);
+}
+
+.suggestion-form {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  background: var(--background-secondary);
+}
+
+.suggestion-form h3 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .case-detail-card {
+    padding: var(--spacing-lg);
+  }
+
+  .case-detail-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .case-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .victims-list {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
