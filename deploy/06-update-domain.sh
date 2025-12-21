@@ -1,133 +1,143 @@
 #!/bin/bash
 
-# =============================================================================
-# 06-update-domain.sh
-# Update server configuration with domain name and setup Let's Encrypt SSL
-# =============================================================================
+# ============================================================
+# History Platform - Обновление домена
+# ============================================================
+# Используйте этот скрипт когда получите доменное имя
+# ============================================================
 
 set -e
 
-# Colors for output
+# Цвета
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Configuration
-SERVER_IP="34.51.218.216"
+# Конфигурация
+APP_NAME="history-platform"
 APP_DIR="/var/www/history-platform"
+STATIC_DIR="/var/www/html/history-platform"
+DEFAULT_SERVER_IP="34.51.218.216"
 
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then
-    print_error "Please run as root (use sudo)"
-    exit 1
-fi
+# Функции логирования
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# =============================================================================
-# Get Domain Name
-# =============================================================================
-echo ""
-echo "╔═══════════════════════════════════════════════════════════╗"
-echo "║       DOMAIN CONFIGURATION & LET'S ENCRYPT SSL            ║"
-echo "╚═══════════════════════════════════════════════════════════╝"
-echo ""
+# Проверка root
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        log_error "Этот скрипт должен быть запущен с правами root (sudo)"
+        exit 1
+    fi
+}
 
-read -p "Enter your domain name (e.g., example.com): " DOMAIN_NAME
+# Получение IP адреса
+get_server_ip() {
+    SERVER_IP=$(curl -s ifconfig.me 2>/dev/null || echo "$DEFAULT_SERVER_IP")
+    
+    # Если автоматическое определение не удалось, используем дефолтный IP
+    if [ -z "$SERVER_IP" ] || [ "$SERVER_IP" = "" ]; then
+        SERVER_IP="$DEFAULT_SERVER_IP"
+    fi
+    
+    log_info "IP адрес сервера: $SERVER_IP"
+}
 
-if [ -z "$DOMAIN_NAME" ]; then
-    print_error "Domain name cannot be empty"
-    exit 1
-fi
-
-# Remove any protocol prefix if user entered it
-DOMAIN_NAME=$(echo "$DOMAIN_NAME" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-
-print_status "Domain: $DOMAIN_NAME"
-
-read -p "Enter your email for Let's Encrypt notifications: " EMAIL
-
-if [ -z "$EMAIL" ]; then
-    print_error "Email cannot be empty"
-    exit 1
-fi
-
-print_status "Email: $EMAIL"
-
-echo ""
-read -p "Include www.$DOMAIN_NAME? (y/n): " INCLUDE_WWW
-INCLUDE_WWW=${INCLUDE_WWW:-y}
-
-# =============================================================================
-# DNS Check
-# =============================================================================
-print_status "Checking DNS configuration..."
-
-DOMAIN_IP=$(dig +short $DOMAIN_NAME | head -n 1)
-
-if [ "$DOMAIN_IP" = "$SERVER_IP" ]; then
-    print_success "DNS is correctly pointing to $SERVER_IP"
-else
-    print_warning "DNS check: $DOMAIN_NAME resolves to $DOMAIN_IP"
-    print_warning "Expected: $SERVER_IP"
+# Запрос домена
+get_domain_info() {
     echo ""
-    read -p "Continue anyway? (y/n): " CONTINUE
-    if [ "$CONTINUE" != "y" ] && [ "$CONTINUE" != "Y" ]; then
-        print_error "Please configure DNS first"
+    read -p "Введите доменное имя: " DOMAIN_NAME
+    
+    if [ -z "$DOMAIN_NAME" ]; then
+        log_error "Домен не может быть пустым"
+        exit 1
+    fi
+    
+    # Удаляем протокол если был введён
+    DOMAIN_NAME=$(echo "$DOMAIN_NAME" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+    
+    read -p "Введите email для SSL сертификата: " CERT_EMAIL
+    
+    if [ -z "$CERT_EMAIL" ]; then
+        log_error "Email не может быть пустым"
+        exit 1
+    fi
+    
+    echo ""
+    read -p "Включить www.$DOMAIN_NAME? (y/n, по умолчанию: y): " INCLUDE_WWW
+    INCLUDE_WWW=${INCLUDE_WWW:-y}
+    
+    log_info "Домен: $DOMAIN_NAME"
+    log_info "Email: $CERT_EMAIL"
+}
+
+# Проверка DNS
+check_dns() {
+    log_info "Проверка DNS..."
+    
+    if ! command -v dig &> /dev/null; then
+        log_warning "dig не установлен, пропускаем проверку DNS"
+        return
+    fi
+    
+    DOMAIN_IP=$(dig +short $DOMAIN_NAME | head -n 1)
+    
+    if [ "$DOMAIN_IP" = "$SERVER_IP" ]; then
+        log_success "DNS корректно указывает на $SERVER_IP"
+    else
+        log_warning "DNS проверка: $DOMAIN_NAME -> $DOMAIN_IP"
+        log_warning "Ожидается: $SERVER_IP"
         echo ""
-        echo "Add these DNS records:"
+        echo "Убедитесь что A-запись домена указывает на $SERVER_IP"
+        echo ""
+        echo "Добавьте следующие DNS записи:"
         echo "  A    @    $SERVER_IP"
         if [ "$INCLUDE_WWW" = "y" ] || [ "$INCLUDE_WWW" = "Y" ]; then
             echo "  A    www  $SERVER_IP"
         fi
-        exit 1
+        echo ""
+        read -p "Продолжить? (y/n): " CONTINUE
+        if [ "$CONTINUE" != "y" ] && [ "$CONTINUE" != "Y" ]; then
+            exit 1
+        fi
     fi
-fi
+}
 
-# =============================================================================
-# Update Nginx Configuration
-# =============================================================================
-print_status "Updating Nginx configuration..."
-
-# Build server_name directive
-if [ "$INCLUDE_WWW" = "y" ] || [ "$INCLUDE_WWW" = "Y" ]; then
-    SERVER_NAMES="$DOMAIN_NAME www.$DOMAIN_NAME"
-else
-    SERVER_NAMES="$DOMAIN_NAME"
-fi
-
-# Create new Nginx configuration
-cat > /etc/nginx/sites-available/history-platform << EOF
+# Обновление конфигурации Nginx
+update_nginx_config() {
+    log_info "Обновление конфигурации Nginx..."
+    
+    # Формируем server_name
+    if [ "$INCLUDE_WWW" = "y" ] || [ "$INCLUDE_WWW" = "Y" ]; then
+        SERVER_NAMES="$DOMAIN_NAME www.$DOMAIN_NAME"
+    else
+        SERVER_NAMES="$DOMAIN_NAME"
+    fi
+    
+    # Создаём резервную копию
+    if [ -f "/etc/nginx/sites-available/$APP_NAME" ]; then
+        cp /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-available/$APP_NAME.backup.$(date +%Y%m%d_%H%M%S)
+    fi
+    
+    cat > /etc/nginx/sites-available/$APP_NAME << EOF
 # History Platform - Nginx Configuration
 # Domain: $DOMAIN_NAME
 # Server IP: $SERVER_IP
 
-# Rate limiting zone
+# Rate limiting zone для API
 limit_req_zone \$binary_remote_addr zone=api_limit:10m rate=10r/s;
 
-# Upstream for API server
-upstream history_api {
+# Upstream для Node.js бэкенда
+upstream history_platform_backend {
     server 127.0.0.1:5000;
     keepalive 64;
 }
 
-# Redirect IP to domain
+# Редирект IP на домен
 server {
     listen 80;
     listen [::]:80;
@@ -135,22 +145,27 @@ server {
     return 301 http://$DOMAIN_NAME\$request_uri;
 }
 
-# HTTP Server (will be updated by Certbot)
+# HTTP Server (будет обновлён Certbot)
 server {
     listen 80;
     listen [::]:80;
     server_name $SERVER_NAMES;
 
-    # Security headers
+    # Let's Encrypt challenge
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Безопасность
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-    # Client max body size (for file uploads)
+    # Максимальный размер тела запроса
     client_max_body_size 10M;
 
-    # Gzip compression
+    # Gzip сжатие
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
@@ -158,15 +173,15 @@ server {
     gzip_types text/plain text/css text/xml text/javascript application/javascript application/json application/xml+rss;
     gzip_comp_level 6;
 
-    # Root directory for static files
-    root /var/www/html/history-platform;
+    # Корневая директория
+    root $STATIC_DIR;
     index index.html;
 
     # API proxy
     location /api {
         limit_req zone=api_limit burst=20 nodelay;
         
-        proxy_pass http://history_api;
+        proxy_pass http://history_platform_backend;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -179,7 +194,14 @@ server {
         proxy_connect_timeout 75s;
     }
 
-    # Static files with caching
+    # Статические файлы
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files \$uri =404;
+    }
+
+    # Assets директория
     location /assets {
         expires 1y;
         add_header Cache-Control "public, immutable";
@@ -198,169 +220,196 @@ server {
         access_log off;
     }
 
-    # SPA fallback - all routes go to index.html
+    # SPA fallback
     location / {
         try_files \$uri \$uri/ /index.html;
     }
 
-    # Deny access to hidden files
+    # Запрет доступа к скрытым файлам
     location ~ /\. {
         deny all;
         access_log off;
         log_not_found off;
     }
 
-    # Logging
-    access_log /var/log/nginx/history-platform.access.log;
-    error_log /var/log/nginx/history-platform.error.log;
+    # Логи
+    access_log /var/log/nginx/${APP_NAME}_access.log;
+    error_log /var/log/nginx/${APP_NAME}_error.log;
 }
 EOF
 
-print_success "Nginx configuration updated"
-
-# =============================================================================
-# Test and reload Nginx
-# =============================================================================
-print_status "Testing Nginx configuration..."
-
-nginx -t
-
-if [ $? -eq 0 ]; then
-    print_success "Nginx configuration is valid"
-    systemctl reload nginx
-    print_success "Nginx reloaded"
-else
-    print_error "Nginx configuration test failed!"
-    exit 1
-fi
-
-# =============================================================================
-# Setup Let's Encrypt SSL
-# =============================================================================
-print_status "Setting up Let's Encrypt SSL certificate..."
-
-# Build certbot command
-if [ "$INCLUDE_WWW" = "y" ] || [ "$INCLUDE_WWW" = "Y" ]; then
-    CERTBOT_DOMAINS="-d $DOMAIN_NAME -d www.$DOMAIN_NAME"
-else
-    CERTBOT_DOMAINS="-d $DOMAIN_NAME"
-fi
-
-# Run certbot
-certbot --nginx \
-    $CERTBOT_DOMAINS \
-    --email $EMAIL \
-    --agree-tos \
-    --no-eff-email \
-    --redirect
-
-if [ $? -eq 0 ]; then
-    print_success "Let's Encrypt SSL certificate installed"
-else
-    print_error "Certbot failed"
-    exit 1
-fi
-
-# =============================================================================
-# Update Application Configuration
-# =============================================================================
-print_status "Updating application configuration..."
-
-# Update server .env
-if [ -f "$APP_DIR/server/.env" ]; then
-    # Update CORS_ORIGIN
-    sed -i "s|CORS_ORIGIN=.*|CORS_ORIGIN=https://$DOMAIN_NAME|g" "$APP_DIR/server/.env"
-    
-    # Add domain to env
-    if grep -q "DOMAIN=" "$APP_DIR/server/.env"; then
-        sed -i "s|DOMAIN=.*|DOMAIN=$DOMAIN_NAME|g" "$APP_DIR/server/.env"
+    # Проверка и перезагрузка
+    if nginx -t; then
+        systemctl reload nginx
+        log_success "Конфигурация Nginx обновлена"
     else
-        echo "DOMAIN=$DOMAIN_NAME" >> "$APP_DIR/server/.env"
+        log_error "Ошибка в конфигурации Nginx"
+        exit 1
+    fi
+}
+
+# Получение SSL сертификата
+get_ssl_certificate() {
+    log_info "Получение Let's Encrypt сертификата..."
+    
+    # Формируем список доменов для certbot
+    if [ "$INCLUDE_WWW" = "y" ] || [ "$INCLUDE_WWW" = "Y" ]; then
+        CERTBOT_DOMAINS="-d $DOMAIN_NAME -d www.$DOMAIN_NAME"
+    else
+        CERTBOT_DOMAINS="-d $DOMAIN_NAME"
     fi
     
-    print_success "Server .env updated"
-fi
+    # Проверяем что certbot установлен
+    if ! command -v certbot &> /dev/null; then
+        log_error "Certbot не установлен. Установите: apt-get install certbot python3-certbot-nginx"
+        exit 1
+    fi
+    
+    # Получаем сертификат
+    certbot --nginx \
+        $CERTBOT_DOMAINS \
+        --email $CERT_EMAIL \
+        --agree-tos \
+        --no-eff-email \
+        --redirect \
+        --non-interactive
+    
+    if [ $? -eq 0 ]; then
+        log_success "Let's Encrypt сертификат установлен"
+    else
+        log_error "Ошибка при получении сертификата"
+        exit 1
+    fi
+}
 
-# Update client .env.production
-if [ -f "$APP_DIR/client/.env.production" ]; then
-    sed -i "s|VITE_API_URL=.*|VITE_API_URL=https://$DOMAIN_NAME/api|g" "$APP_DIR/client/.env.production"
-    print_success "Client .env.production updated"
-fi
+# Обновление конфигурации приложения
+update_app_config() {
+    log_info "Обновление конфигурации приложения..."
+    
+    # Обновляем server .env
+    if [ -f "$APP_DIR/server/.env" ]; then
+        # Обновляем CORS_ORIGIN
+        sed -i "s|CORS_ORIGIN=.*|CORS_ORIGIN=https://$DOMAIN_NAME|g" "$APP_DIR/server/.env"
+        
+        # Добавляем домен в env если его нет
+        if grep -q "DOMAIN=" "$APP_DIR/server/.env"; then
+            sed -i "s|DOMAIN=.*|DOMAIN=$DOMAIN_NAME|g" "$APP_DIR/server/.env"
+        else
+            echo "DOMAIN=$DOMAIN_NAME" >> "$APP_DIR/server/.env"
+        fi
+        
+        log_success "Server .env обновлён"
+    else
+        log_warning "Файл $APP_DIR/server/.env не найден"
+    fi
+    
+    # Обновляем client .env.production
+    if [ -f "$APP_DIR/client/.env.production" ]; then
+        sed -i "s|VITE_API_URL=.*|VITE_API_URL=https://$DOMAIN_NAME/api|g" "$APP_DIR/client/.env.production"
+        log_success "Client .env.production обновлён"
+    else
+        log_warning "Файл $APP_DIR/client/.env.production не найден"
+    fi
+}
 
-# =============================================================================
-# Rebuild Client
-# =============================================================================
-print_status "Rebuilding client with new configuration..."
+# Пересборка клиента
+rebuild_client() {
+    log_info "Пересборка клиента с новой конфигурацией..."
+    
+    if [ ! -d "$APP_DIR/client" ]; then
+        log_warning "Директория клиента не найдена, пропускаем пересборку"
+        return
+    fi
+    
+    cd "$APP_DIR/client"
+    npm run build
+    
+    # Копируем собранные файлы
+    mkdir -p $STATIC_DIR
+    cp -r dist/* $STATIC_DIR/
+    
+    log_success "Клиент пересобран"
+}
 
-cd "$APP_DIR/client"
-npm run build
-cp -r dist/* /var/www/html/history-platform/
+# Перезапуск приложения
+restart_app() {
+    log_info "Перезапуск приложения..."
+    
+    if command -v pm2 &> /dev/null; then
+        pm2 restart history-platform-api 2>/dev/null || pm2 restart all
+        log_success "Приложение перезапущено"
+    else
+        log_warning "PM2 не найден, пропускаем перезапуск"
+    fi
+}
 
-print_success "Client rebuilt"
+# Настройка автообновления сертификата
+setup_cert_renewal() {
+    log_info "Настройка автообновления сертификата..."
+    
+    # Тестовый запуск обновления
+    certbot renew --dry-run 2>/dev/null || log_warning "Тестовый запуск обновления завершился с ошибкой"
+    
+    # Добавляем cron задачу если её нет
+    if ! crontab -l 2>/dev/null | grep -q "certbot renew"; then
+        (crontab -l 2>/dev/null; echo "0 3 * * * /usr/bin/certbot renew --quiet --post-hook 'systemctl reload nginx'") | crontab -
+        log_success "Автообновление настроено (каждый день в 3:00)"
+    else
+        log_info "Автообновление уже настроено"
+    fi
+}
 
-# =============================================================================
-# Restart Application
-# =============================================================================
-print_status "Restarting application..."
+# Очистка старых самоподписанных сертификатов
+cleanup_old_certs() {
+    if [ -d "/etc/ssl/history-platform" ]; then
+        log_info "Очистка старых самоподписанных сертификатов..."
+        rm -rf /etc/ssl/history-platform
+        log_success "Старые сертификаты удалены"
+    fi
+}
 
-pm2 restart all
-print_success "Application restarted"
+# Вывод итоговой информации
+print_summary() {
+    echo ""
+    echo "============================================================"
+    echo -e "${GREEN}Домен настроен успешно!${NC}"
+    echo "============================================================"
+    echo ""
+    echo "🌐 Сайт: https://$DOMAIN_NAME"
+    echo "🔌 API:  https://$DOMAIN_NAME/api"
+    echo ""
+    echo "SSL сертификат будет автоматически обновляться."
+    echo ""
+    echo "Полезные команды:"
+    echo "  certbot certificates          - просмотр сертификатов"
+    echo "  certbot renew                 - обновление сертификатов"
+    echo "  certbot renew --dry-run       - тестовое обновление"
+    echo ""
+    echo "============================================================"
+}
 
-# =============================================================================
-# Setup Auto-renewal
-# =============================================================================
-print_status "Setting up SSL certificate auto-renewal..."
+# Главная функция
+main() {
+    check_root
+    
+    echo "============================================================"
+    echo "History Platform - Обновление домена"
+    echo "============================================================"
+    echo ""
+    
+    get_server_ip
+    get_domain_info
+    check_dns
+    update_nginx_config
+    get_ssl_certificate
+    update_app_config
+    rebuild_client
+    restart_app
+    setup_cert_renewal
+    cleanup_old_certs
+    
+    print_summary
+}
 
-# Test renewal
-certbot renew --dry-run
-
-# Add cron job for renewal (certbot usually adds this automatically)
-if ! crontab -l 2>/dev/null | grep -q "certbot renew"; then
-    (crontab -l 2>/dev/null; echo "0 3 * * * /usr/bin/certbot renew --quiet --post-hook 'systemctl reload nginx'") | crontab -
-    print_success "Auto-renewal cron job added"
-else
-    print_warning "Auto-renewal cron job already exists"
-fi
-
-# =============================================================================
-# Remove old self-signed certificate config
-# =============================================================================
-if [ -d "/etc/ssl/history-platform" ]; then
-    print_status "Cleaning up old self-signed certificates..."
-    rm -rf /etc/ssl/history-platform
-    print_success "Old certificates removed"
-fi
-
-# =============================================================================
-# Summary
-# =============================================================================
-echo ""
-echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║           DOMAIN CONFIGURATION COMPLETE!                      ║"
-echo "╠═══════════════════════════════════════════════════════════════╣"
-echo "║                                                               ║"
-echo "║  Domain:        $DOMAIN_NAME"
-echo "║  SSL:           Let's Encrypt (auto-renewal enabled)          ║"
-echo "║                                                               ║"
-echo "║  Website:       https://$DOMAIN_NAME"
-echo "║  API:           https://$DOMAIN_NAME/api"
-echo "║                                                               ║"
-echo "╠═══════════════════════════════════════════════════════════════╣"
-echo "║                    SSL CERTIFICATE INFO                       ║"
-echo "╠═══════════════════════════════════════════════════════════════╣"
-echo ""
-certbot certificates
-echo ""
-echo "╠═══════════════════════════════════════════════════════════════╣"
-echo "║                    USEFUL COMMANDS                            ║"
-echo "╠═══════════════════════════════════════════════════════════════╣"
-echo "║                                                               ║"
-echo "║  Check SSL:      certbot certificates                         ║"
-echo "║  Renew SSL:      certbot renew                                ║"
-echo "║  Test Renewal:   certbot renew --dry-run                      ║"
-echo "║                                                               ║"
-echo "╚═══════════════════════════════════════════════════════════════╝"
-echo ""
-
-print_success "Domain configuration completed successfully!"
-
+# Запуск
+main "$@"
