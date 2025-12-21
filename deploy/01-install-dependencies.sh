@@ -132,11 +132,30 @@ install_mongodb() {
     case $OS in
         ubuntu|debian)
             # Импорт GPG ключа MongoDB
+            if [ -f /usr/share/keyrings/mongodb-server-7.0.gpg ]; then
+                log_warning "GPG ключ MongoDB уже существует, перезаписываем..."
+            fi
             curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
                 gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
             
+            # Определяем коднейм для репозитория MongoDB
+            # MongoDB поддерживает только LTS версии Ubuntu, используем jammy (22.04) для новых версий
+            UBUNTU_CODENAME=$(lsb_release -cs)
+            case $UBUNTU_CODENAME in
+                jammy|focal|bionic)
+                    # Эти версии поддерживаются MongoDB
+                    MONGO_CODENAME=$UBUNTU_CODENAME
+                    ;;
+                *)
+                    # Для новых версий используем jammy (последняя LTS)
+                    log_warning "Ubuntu $UBUNTU_CODENAME не поддерживается MongoDB официально"
+                    log_info "Используем репозиторий для jammy (Ubuntu 22.04 LTS)"
+                    MONGO_CODENAME="jammy"
+                    ;;
+            esac
+            
             # Добавление репозитория
-            echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/7.0 multiverse" | \
+            echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu $MONGO_CODENAME/mongodb-org/7.0 multiverse" | \
                 tee /etc/apt/sources.list.d/mongodb-org-7.0.list
             
             apt-get update
