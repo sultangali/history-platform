@@ -138,6 +138,12 @@ install_mongodb() {
             curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
                 gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
             
+            # Удаляем старый файл репозитория если он существует
+            if [ -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
+                log_info "Удаление старой конфигурации репозитория MongoDB..."
+                rm -f /etc/apt/sources.list.d/mongodb-org-7.0.list
+            fi
+            
             # Определяем коднейм для репозитория MongoDB
             # MongoDB поддерживает только LTS версии Ubuntu, используем jammy (22.04) для новых версий
             UBUNTU_CODENAME=$(lsb_release -cs)
