@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { List, X, PersonCircle, BoxArrowRight, Globe } from 'react-bootstrap-icons';
@@ -7,9 +7,29 @@ import './Header.css';
 
 const Header = () => {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin, isModerator } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Закрытие меню при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userMenuOpen]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -18,6 +38,32 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
+    setUserMenuOpen(false);
+  };
+
+  const getUserRoleLink = () => {
+    if (isAdmin) {
+      return '/admin';
+    } else if (isModerator) {
+      return '/moderator';
+    }
+    return '/';
+  };
+
+  const getUserRoleLabel = () => {
+    if (isAdmin) {
+      return i18n.language === 'kk' ? 'Әкімші' : i18n.language === 'ru' ? 'Администратор' : 'Admin';
+    } else if (isModerator) {
+      return i18n.language === 'kk' ? 'Модератор' : i18n.language === 'ru' ? 'Модератор' : 'Moderator';
+    }
+    return i18n.language === 'kk' ? 'Қолданушы' : i18n.language === 'ru' ? 'Пользователь' : 'User';
+  };
+
+  const handleUserMenuClick = () => {
+    const link = getUserRoleLink();
+    navigate(link);
+    setUserMenuOpen(false);
     setMobileMenuOpen(false);
   };
 
@@ -48,7 +94,10 @@ const Header = () => {
             <div className="language-switcher">
               <button
                 className="btn-icon"
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
+                onClick={() => {
+                  setLangMenuOpen(!langMenuOpen);
+                  setUserMenuOpen(false);
+                }}
               >
                 <Globe size={20} />
                 <span>{i18n.language.toUpperCase()}</span>
@@ -70,13 +119,36 @@ const Header = () => {
 
             {user ? (
               <div className="user-menu">
-                <Link to="/profile" className="btn-icon">
-                  <PersonCircle size={24} />
-                  <span>{user.fullName}</span>
-                </Link>
-                <button onClick={handleLogout} className="btn-icon">
-                  <BoxArrowRight size={20} />
-                </button>
+                <div className="user-menu-dropdown" ref={userMenuRef}>
+                  <button
+                    className="btn-icon"
+                    onClick={() => {
+                      setUserMenuOpen(!userMenuOpen);
+                      setLangMenuOpen(false);
+                    }}
+                  >
+                    <PersonCircle size={24} />
+                    <span>{user.fullName}</span>
+                  </button>
+                  {userMenuOpen && (
+                    <div className="user-dropdown-menu">
+                      <button
+                        onClick={handleUserMenuClick}
+                        className="user-dropdown-item"
+                      >
+                        <PersonCircle size={18} />
+                        <span>{getUserRoleLabel()}</span>
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="user-dropdown-item"
+                      >
+                        <BoxArrowRight size={18} />
+                        <span>{t('nav.logout')}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -132,10 +204,16 @@ const Header = () => {
 
             {user ? (
               <>
-                <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
+                <button
+                  onClick={() => {
+                    navigate(getUserRoleLink());
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mobile-user-btn"
+                >
                   <PersonCircle size={20} />
-                  {user.fullName}
-                </Link>
+                  {user.fullName} ({getUserRoleLabel()})
+                </button>
                 <button onClick={handleLogout} className="logout-btn">
                   <BoxArrowRight size={20} />
                   {t('nav.logout')}
