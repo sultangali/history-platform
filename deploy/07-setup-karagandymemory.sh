@@ -257,6 +257,26 @@ get_ssl_certificate() {
     
     if [ $? -eq 0 ]; then
         log_success "Let's Encrypt сертификат установлен"
+        
+        # Проверяем и исправляем конфигурацию после certbot
+        log_info "Проверка конфигурации после certbot..."
+        sleep 2
+        
+        # Убеждаемся что оба домена указаны в server_name для HTTPS
+        if grep -q "server_name.*$DOMAIN_NAME.*$WWW_DOMAIN\|server_name.*$WWW_DOMAIN.*$DOMAIN_NAME" /etc/nginx/sites-available/$APP_NAME; then
+            log_success "Оба домена указаны в конфигурации"
+        else
+            log_warning "Исправляем server_name для HTTPS блока..."
+            # Находим HTTPS блок и обновляем server_name
+            sed -i "/listen 443 ssl/,/server_name/ s|server_name.*;|server_name $DOMAIN_NAME $WWW_DOMAIN;|" /etc/nginx/sites-available/$APP_NAME
+            
+            if nginx -t; then
+                systemctl reload nginx
+                log_success "Конфигурация исправлена и перезагружена"
+            else
+                log_error "Ошибка в конфигурации после исправления"
+            fi
+        fi
     else
         log_error "Ошибка при получении сертификата"
         exit 1
