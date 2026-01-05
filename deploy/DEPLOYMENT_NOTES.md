@@ -266,3 +266,4 @@ sudo ufw status
 
 For issues with deployment, check the logs and verify each service is running correctly.
 
+
