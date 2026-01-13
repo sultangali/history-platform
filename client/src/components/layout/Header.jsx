@@ -53,11 +53,11 @@ const Header = () => {
 
   const getUserRoleLabel = () => {
     if (isAdmin) {
-      return i18n.language === 'kk' ? 'Әкімші' : i18n.language === 'ru' ? 'Администратор' : 'Admin';
+      return t('admin.adminRole');
     } else if (isModerator) {
-      return i18n.language === 'kk' ? 'Модератор' : i18n.language === 'ru' ? 'Модератор' : 'Moderator';
+      return t('admin.moderatorRole');
     }
-    return i18n.language === 'kk' ? 'Қолданушы' : i18n.language === 'ru' ? 'Пользователь' : 'User';
+    return t('admin.userRole');
   };
 
   const handleUserMenuClick = () => {

@@ -44,7 +44,7 @@ const Contact = () => {
           <div className="contact-header">
             <h1>{t('feedback.title')}</h1>
             <p className="text-muted">
-              We appreciate your feedback and suggestions to improve our archive.
+              {t('contact.appreciateText')}
             </p>
           </div>
 
@@ -52,16 +52,15 @@ const Contact = () => {
             <div className="contact-info">
               <div className="info-card card">
                 <EnvelopeAt size={32} className="info-icon" />
-                <h3>Email</h3>
-                <p>archive@karaganda.kz</p>
+                <h3>{t('contact.email')}</h3>
+                <p>archive@karagandymemory.kz</p>
               </div>
 
               <div className="info-card card">
                 <ChatLeftText size={32} className="info-icon" />
                 <h3>{t('feedback.title')}</h3>
                 <p>
-                  Share your thoughts, report errors, or suggest improvements to our
-                  database.
+                  {t('contact.shareText')}
                 </p>
               </div>
             </div>

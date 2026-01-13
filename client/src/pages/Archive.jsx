@@ -171,7 +171,7 @@ const Archive = () => {
             <>
               <div className="results-count">
                 <p className="text-muted">
-                  Found {cases.length} {cases.length === 1 ? 'case' : 'cases'}
+                  {t(cases.length === 1 ? 'archive.foundCase' : 'archive.foundCases', { count: cases.length })}
                 </p>
               </div>
               <div className="cases-grid">

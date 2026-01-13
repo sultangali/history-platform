@@ -9,27 +9,23 @@ const About = () => {
   const features = [
     {
       icon: Archive,
-      title: 'Historical Archive',
-      description:
-        'Comprehensive collection of documents and records from the period of political repressions in Karaganda Region.'
+      title: t('about.historicalArchive'),
+      description: t('about.historicalArchiveDesc')
     },
     {
       icon: Search,
-      title: 'Search Database',
-      description:
-        'Advanced search functionality to help you find information about specific individuals and cases.'
+      title: t('about.searchDatabase'),
+      description: t('about.searchDatabaseDesc')
     },
     {
       icon: Book,
-      title: 'Research Materials',
-      description:
-        'Access to historical research, analysis, and documentation of events during the repression period.'
+      title: t('about.researchMaterials'),
+      description: t('about.researchMaterialsDesc')
     },
     {
       icon: People,
-      title: 'Community Collaboration',
-      description:
-        'Platform for sharing memories, correcting information, and contributing to historical accuracy.'
+      title: t('about.communityCollaboration'),
+      description: t('about.communityCollaborationDesc')
     }
   ];
 
@@ -58,22 +54,17 @@ const About = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="content-section">
-              <h2>Our Mission</h2>
+              <h2>{t('about.mission')}</h2>
               <p>
-                This digital archive is dedicated to preserving the memory of those who
-                suffered during the political repressions in Karaganda Region. We strive
-                to document, research, and make accessible historical records that tell
-                the stories of individuals and communities affected by these events.
+                {t('about.missionText1')}
               </p>
               <p>
-                Through careful documentation and community collaboration, we aim to
-                ensure that these important historical events are not forgotten and that
-                future generations can learn from the past.
+                {t('about.missionText2')}
               </p>
             </div>
 
             <div className="features-section">
-              <h2>What We Offer</h2>
+              <h2>{t('about.whatWeOffer')}</h2>
               <div className="features-grid">
                 {features.map((feature, index) => (
                   <motion.div
@@ -93,18 +84,12 @@ const About = () => {
             </div>
 
             <div className="content-section">
-              <h2>Historical Context</h2>
+              <h2>{t('about.historicalContext')}</h2>
               <p>
-                The Karaganda Region played a significant role during the period of
-                political repressions in the Soviet Union. Many individuals were
-                subjected to unjust persecution, exile, and imprisonment. This archive
-                serves as a testament to their experiences and a resource for
-                understanding this complex period of history.
+                {t('about.historicalContextText1')}
               </p>
               <p>
-                We work with historians, researchers, and descendants of those affected
-                to continuously improve and expand our database, ensuring accuracy and
-                comprehensiveness in our documentation.
+                {t('about.historicalContextText2')}
               </p>
             </div>
           </motion.div>

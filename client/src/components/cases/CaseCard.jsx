@@ -7,7 +7,7 @@ const CaseCard = ({ caseData }) => {
   const { t } = useTranslation();
 
   const formatDate = (date) => {
-    if (!date) return 'N/A';
+    if (!date) return t('caseDetail.notAvailable');
     return new Date(date).toLocaleDateString();
   };
 

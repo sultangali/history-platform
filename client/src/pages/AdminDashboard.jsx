@@ -48,11 +48,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case 'admin':
+        return t('admin.adminRole');
+      case 'moderator':
+        return t('admin.moderatorRole');
+      case 'user':
+        return t('admin.userRole');
+      default:
+        return role;
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="admin-page">
         <div className="container">
-          <div className="empty-state">Access denied</div>
+          <div className="empty-state">{t('admin.accessDenied')}</div>
         </div>
       </div>
     );
@@ -114,7 +127,7 @@ const AdminDashboard = () => {
                           <td>{user.email}</td>
                           <td>
                             <span className={`badge badge-${user.role}`}>
-                              {user.role}
+                              {getRoleLabel(user.role)}
                             </span>
                           </td>
                           <td>
@@ -123,7 +136,7 @@ const AdminDashboard = () => {
                                 user.blocked ? 'badge-blocked' : 'badge-active'
                               }`}
                             >
-                              {user.blocked ? 'Blocked' : 'Active'}
+                              {user.blocked ? t('admin.blocked') : t('admin.active')}
                             </span>
                           </td>
                           <td>
@@ -135,9 +148,9 @@ const AdminDashboard = () => {
                                 }
                                 className="role-select"
                               >
-                                <option value="user">User</option>
-                                <option value="moderator">Moderator</option>
-                                <option value="admin">Admin</option>
+                                <option value="user">{t('admin.userRole')}</option>
+                                <option value="moderator">{t('admin.moderatorRole')}</option>
+                                <option value="admin">{t('admin.adminRole')}</option>
                               </select>
                               <button
                                 onClick={() =>

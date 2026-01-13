@@ -44,7 +44,10 @@
     "information": "Case Information",
     "documents": "Documents",
     "suggestEdit": "Suggest Edit",
-    "reportError": "Report Error"
+    "reportError": "Report Error",
+    "notFound": "Case not found",
+    "notAvailable": "N/A",
+    "document": "Document"
   },
   "auth": {
     "loginTitle": "Login",
@@ -68,7 +71,9 @@
     "complaints": "Complaints and Suggestions",
     "pending": "Pending",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "quickActions": "Quick Actions",
+    "accessDenied": "Access denied"
   },
   "admin": {
     "dashboard": "Admin Dashboard",
@@ -81,7 +86,13 @@
     "makeModerator": "Make Moderator",
     "makeUser": "Make User",
     "block": "Block",
-    "unblock": "Unblock"
+    "unblock": "Unblock",
+    "active": "Active",
+    "blocked": "Blocked",
+    "userRole": "User",
+    "moderatorRole": "Moderator",
+    "adminRole": "Admin",
+    "accessDenied": "Access denied"
   },
   "form": {
     "required": "Required field",
@@ -126,6 +137,41 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Use",
     "copyright": "© 2025 Karaganda Region Archive. All rights reserved."
+  },
+  "home": {
+    "featureArchive": "Comprehensive database of historical documents and cases",
+    "featureSearch": "Search and filter by location, year, and names",
+    "featureDocuments": "Access to archive documents and historical records",
+    "featureMemories": "Memories and testimonies from survivors",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "aboutText": "This archive is dedicated to preserving the memory of those who suffered during the political repressions in Karaganda Region. Our mission is to document and make accessible the historical records, providing a resource for researchers, families, and anyone interested in this important period of history."
+  },
+  "about": {
+    "mission": "Our Mission",
+    "missionText1": "This digital archive is dedicated to preserving the memory of those who suffered during the political repressions in Karaganda Region. We strive to document, research, and make accessible historical records that tell the stories of individuals and communities affected by these events.",
+    "missionText2": "Through careful documentation and community collaboration, we aim to ensure that these important historical events are not forgotten and that future generations can learn from the past.",
+    "whatWeOffer": "What We Offer",
+    "historicalArchive": "Historical Archive",
+    "historicalArchiveDesc": "Comprehensive collection of documents and records from the period of political repressions in Karaganda Region.",
+    "searchDatabase": "Search Database",
+    "searchDatabaseDesc": "Advanced search functionality to help you find information about specific individuals and cases.",
+    "researchMaterials": "Research Materials",
+    "researchMaterialsDesc": "Access to historical research, analysis, and documentation of events during the repression period.",
+    "communityCollaboration": "Community Collaboration",
+    "communityCollaborationDesc": "Platform for sharing memories, correcting information, and contributing to historical accuracy.",
+    "historicalContext": "Historical Context",
+    "historicalContextText1": "The Karaganda Region played a significant role during the period of political repressions in the Soviet Union. Many individuals were subjected to unjust persecution, exile, and imprisonment. This archive serves as a testament to their experiences and a resource for understanding this complex period of history.",
+    "historicalContextText2": "We work with historians, researchers, and descendants of those affected to continuously improve and expand our database, ensuring accuracy and comprehensiveness in our documentation."
+  },
+  "archive": {
+    "foundCases": "Found {{count}} cases",
+    "foundCase": "Found {{count}} case"
+  },
+  "contact": {
+    "appreciateText": "We appreciate your feedback and suggestions to improve our archive.",
+    "email": "Email",
+    "shareText": "Share your thoughts, report errors, or suggest improvements to our database."
   }
 }
 

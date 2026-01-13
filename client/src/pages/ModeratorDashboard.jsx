@@ -68,7 +68,7 @@ const ModeratorDashboard = () => {
     return (
       <div className="moderator-page">
         <div className="container">
-          <div className="empty-state">Access denied</div>
+          <div className="empty-state">{t('moderator.accessDenied')}</div>
         </div>
       </div>
     );
@@ -157,7 +157,7 @@ const ModeratorDashboard = () => {
                         <p className="text-muted">{suggestion.message}</p>
                         <div className="suggestion-meta">
                           <span className="text-muted">
-                            Case: {suggestion.caseId?.title || 'N/A'}
+                            {t('cases.title')}: {suggestion.caseId?.title || t('caseDetail.notAvailable')}
                           </span>
                         </div>
                         <div className="suggestion-actions">
@@ -186,7 +186,7 @@ const ModeratorDashboard = () => {
 
               {/* Quick Actions */}
               <div className="quick-actions">
-                <h2>Quick Actions</h2>
+                <h2>{t('moderator.quickActions')}</h2>
                 <div className="actions-grid">
                   <Link to="/moderator/add-case" className="action-card card">
                     <PlusCircle size={32} />

@@ -48,9 +48,9 @@ npm run seed
 
 **Учетные данные:**
 ```
-Админ:      admin@archive.kz / admin123
-Модератор:  moderator@archive.kz / moderator123
-Пользователь: user@archive.kz / user123
+Админ:      admin@karagandymemory.kz / KRG_MEMadmin1122
+Модератор:  moderator@karagandymemory.kz / KRG_MEMmoderator332211
+Пользователь: user@karagandymemory.kz / KRG_MEMuser741852963
 ```
 
 ### 5. Запустите проект

@@ -18,7 +18,10 @@ i18n
     fallbackLng: 'kk',
     interpolation: {
       escapeValue: false
-    }
+    },
+    returnEmptyString: false,
+    returnNull: false,
+    debug: false
   });
 
 export default i18n;

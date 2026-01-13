@@ -40,22 +40,22 @@ const Home = () => {
     {
       icon: Archive,
       title: t('cases.title'),
-      description: 'Comprehensive database of historical documents and cases'
+      description: t('home.featureArchive')
     },
     {
       icon: Search,
       title: t('hero.search'),
-      description: 'Search and filter by location, year, and names'
+      description: t('home.featureSearch')
     },
     {
       icon: Book,
       title: t('app.subtitle').split('.')[1],
-      description: 'Access to archive documents and historical records'
+      description: t('home.featureDocuments')
     },
     {
       icon: People,
       title: t('app.subtitle').split('.')[2],
-      description: 'Memories and testimonies from survivors'
+      description: t('home.featureMemories')
     }
   ];
 
@@ -119,7 +119,7 @@ const Home = () => {
           <div className="section-header">
             <h2>{t('cases.title')}</h2>
             <Link to="/archive" className="btn btn-secondary">
-              View All
+              {t('home.viewAll')}
             </Link>
           </div>
 
@@ -155,14 +155,10 @@ const Home = () => {
           >
             <h2>{t('nav.about')}</h2>
             <p>
-              This archive is dedicated to preserving the memory of those who suffered
-              during the political repressions in Karaganda Region. Our mission is to
-              document and make accessible the historical records, providing a resource
-              for researchers, families, and anyone interested in this important period
-              of history.
+              {t('home.aboutText')}
             </p>
             <Link to="/about" className="btn btn-primary">
-              Learn More
+              {t('home.learnMore')}
             </Link>
           </motion.div>
         </div>

@@ -21,29 +21,29 @@ const seedData = async () => {
     // Create users
     const admin = await User.create({
       fullName: 'Әкімші',
-      email: 'admin@archive.kz',
-      password: 'admin123',
+      email: 'admin@karagandymemory.kz',
+      password: 'KRG_MEMadmin1122',
       role: 'admin'
     });
 
     const moderator = await User.create({
       fullName: 'Модератор',
-      email: 'moderator@archive.kz',
-      password: 'moderator123',
+      email: 'moderator@karagandymemory.kz',
+      password: 'KRG_MEMmoderator332211',
       role: 'moderator'
     });
 
     const user = await User.create({
       fullName: 'Қолданушы',
-      email: 'user@archive.kz',
-      password: 'user123',
+      email: 'user@karagandymemory.kz',
+      password: 'KRG_MEMuser741852963',
       role: 'user'
     });
 
     console.log('Users created:');
-    console.log('Admin: admin@archive.kz / admin123');
-    console.log('Moderator: moderator@archive.kz / moderator123');
-    console.log('User: user@archive.kz / user123');
+    console.log('Admin: admin@karagandymemory.kz / KRG_MEMadmin1122');
+    console.log('Moderator: moderator@karagandymemory.kz / KRG_MEMmoderator332211');
+    console.log('User: user@karagandymemory.kz / KRG_MEMuser741852963');
 
     // Create sample cases
     const cases = [
@@ -147,9 +147,9 @@ const seedData = async () => {
 
     console.log('\n✅ Seed data created successfully!');
     console.log('\nYou can now login with:');
-    console.log('Admin: admin@archive.kz / admin123');
-    console.log('Moderator: moderator@archive.kz / moderator123');
-    console.log('User: user@archive.kz / user123');
+    console.log('Admin: admin@karagandymemory.kz / KRG_MEMadmin1122');
+    console.log('Moderator: moderator@karagandymemory.kz / KRG_MEMmoderator332211');
+    console.log('User: user@karagandymemory.kz / KRG_MEMuser741852963');
 
     process.exit(0);
   } catch (error) {

@@ -60,7 +60,7 @@ const CaseDetail = () => {
   };
 
   const formatDate = (date) => {
-    if (!date) return 'N/A';
+    if (!date) return t('caseDetail.notAvailable');
     return new Date(date).toLocaleDateString();
   };
 
@@ -78,7 +78,7 @@ const CaseDetail = () => {
     return (
       <div className="case-detail-page">
         <div className="container">
-          <div className="empty-state">Case not found</div>
+          <div className="empty-state">{t('caseDetail.notFound')}</div>
         </div>
       </div>
     );
@@ -159,7 +159,7 @@ const CaseDetail = () => {
                   <div className="documents-list">
                     {caseData.documents.map((doc, index) => (
                       <div key={index} className="document-item">
-                        {doc.name || `Document ${index + 1}`}
+                        {doc.name || `${t('caseDetail.document')} ${index + 1}`}
                       </div>
                     ))}
                   </div>
