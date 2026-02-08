@@ -88,9 +88,9 @@ const CaseDetail = () => {
     <div className="case-detail-page">
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15 }}
         >
           <button onClick={() => navigate(-1)} className="btn-back">
             <ArrowLeft size={20} />
@@ -178,11 +178,7 @@ const CaseDetail = () => {
             </div>
 
             {showSuggestionForm && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="suggestion-form card"
-              >
+              <div className="suggestion-form card">
                 <h3>{t('caseDetail.suggestEdit')}</h3>
                 <form onSubmit={handleSubmitSuggestion}>
                   <div className="input-group">
@@ -222,7 +218,7 @@ const CaseDetail = () => {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </div>
             )}
           </div>
         </motion.div>

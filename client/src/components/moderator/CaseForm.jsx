@@ -20,7 +20,8 @@ const CaseForm = ({ isEdit = false }) => {
     dateFrom: '',
     dateTo: '',
     year: '',
-    victims: ['']
+    victims: [''],
+    status: 'published'
   });
 
   useEffect(() => {
@@ -43,7 +44,8 @@ const CaseForm = ({ isEdit = false }) => {
         dateFrom: caseData.dateFrom ? caseData.dateFrom.split('T')[0] : '',
         dateTo: caseData.dateTo ? caseData.dateTo.split('T')[0] : '',
         year: caseData.year || '',
-        victims: caseData.victims || ['']
+        victims: caseData.victims || [''],
+        status: caseData.status || 'published'
       });
     } catch (error) {
       console.error('Error fetching case:', error);
@@ -190,6 +192,20 @@ const CaseForm = ({ isEdit = false }) => {
                   value={formData.dateTo}
                   onChange={(e) => handleChange('dateTo', e.target.value)}
                 />
+              </div>
+
+              <div className="input-group">
+                <label>
+                  {t('moderator.status')} <span className="required">*</span>
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => handleChange('status', e.target.value)}
+                  required
+                >
+                  <option value="published">{t('moderator.published')}</option>
+                  <option value="draft">{t('moderator.draft')}</option>
+                </select>
               </div>
             </div>
 

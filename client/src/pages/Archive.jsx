@@ -27,7 +27,9 @@ const Archive = () => {
   const fetchCases = async () => {
     setLoading(true);
     try {
-      const params = {};
+      const params = {
+        status: 'published' // Only show published cases in public archive
+      };
       if (filters.search) params.search = filters.search;
       if (filters.location) params.location = filters.location;
       if (filters.yearFrom) params.yearFrom = filters.yearFrom;
@@ -72,9 +74,9 @@ const Archive = () => {
       <div className="archive-header">
         <div className="container">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
           >
             <h1>{t('cases.title')}</h1>
             <p className="text-muted">{t('app.subtitle')}</p>
@@ -105,12 +107,7 @@ const Archive = () => {
 
             {/* Filters Panel */}
             {showFilters && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="filters-panel card"
-              >
+              <div className="filters-panel card">
                 <h3>{t('filters.title')}</h3>
                 <div className="filters-grid">
                   <div className="input-group">
@@ -153,7 +150,7 @@ const Archive = () => {
                     {t('filters.reset')}
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
           </motion.div>
         </div>
@@ -175,15 +172,10 @@ const Archive = () => {
                 </p>
               </div>
               <div className="cases-grid">
-                {cases.map((caseItem, index) => (
-                  <motion.div
-                    key={caseItem._id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
+                {cases.map((caseItem) => (
+                  <div key={caseItem._id}>
                     <CaseCard caseData={caseItem} />
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </>

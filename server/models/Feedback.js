@@ -2,9 +2,12 @@ import mongoose from 'mongoose';
 
 const feedbackSchema = new mongoose.Schema(
   {
-    subject: {
+    name: {
       type: String,
-      required: true
+      default: ''
+    },
+    subject: {
+      type: String
     },
     message: {
       type: String,
@@ -14,9 +17,23 @@ const feedbackSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    read: {
+    isRead: {
       type: Boolean,
       default: false
+    },
+    replied: {
+      type: Boolean,
+      default: false
+    },
+    replyMessage: {
+      type: String
+    },
+    repliedAt: {
+      type: Date
+    },
+    repliedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   {

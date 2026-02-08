@@ -75,9 +75,9 @@ const AdminDashboard = () => {
     <div className="admin-page">
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15 }}
         >
           <div className="admin-header">
             <h1>{t('admin.dashboard')}</h1>

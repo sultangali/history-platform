@@ -8,15 +8,27 @@ import suggestionsRoutes from './routes/suggestions.js';
 import feedbackRoutes from './routes/feedback.js';
 import usersRoutes from './routes/users.js';
 
+// Загружаем переменные окружения из .env файла
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const PROJECT_MODE = process.env.PROJECT_MODE || 'dev';
+
+// CORS настройки в зависимости от режима
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Логирование режима работы
+console.log(`🚀 Starting server in ${PROJECT_MODE.toUpperCase()} mode`);
 
 // MongoDB Connection
 const connectDB = async () => {

@@ -42,6 +42,11 @@ const caseSchema = new mongoose.Schema(
         url: String
       }
     ],
+    status: {
+      type: String,
+      enum: ['draft', 'published'],
+      default: 'published'
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'

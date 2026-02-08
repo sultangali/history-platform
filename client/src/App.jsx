@@ -12,6 +12,9 @@ import About from './pages/About';
 import ModeratorDashboard from './pages/ModeratorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import CaseForm from './components/moderator/CaseForm';
+import CaseManagement from './pages/CaseManagement';
+import SuggestionsManagement from './pages/SuggestionsManagement';
+import FeedbackManagement from './pages/FeedbackManagement';
 import './styles/index.css';
 
 // Protected Route Component
@@ -61,6 +64,14 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/moderator/cases"
+            element={
+              <ProtectedRoute requireModerator>
+                <CaseManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/moderator/add-case"
             element={
               <ProtectedRoute requireModerator>
@@ -73,6 +84,22 @@ const AppContent = () => {
             element={
               <ProtectedRoute requireModerator>
                 <CaseForm isEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/moderator/suggestions"
+            element={
+              <ProtectedRoute requireModerator>
+                <SuggestionsManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/moderator/feedback"
+            element={
+              <ProtectedRoute requireModerator>
+                <FeedbackManagement />
               </ProtectedRoute>
             }
           />

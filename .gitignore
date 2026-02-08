@@ -1,10 +1,14 @@
 # Dependencies
 node_modules/
 
-# Environment files
+# Environment files (игнорируем реальные .env, но не .example)
 .env
 .env.local
 .env.*.local
+
+# НЕ игнорируем .env примеры (они должны быть в репозитории)
+!.env.development.example
+!.env.production.example
 
 # Production builds
 dist/
@@ -18,7 +22,7 @@ yarn-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
-
+*.md
 # IDE
 .vscode/
 .idea/

@@ -20,7 +20,10 @@ const Home = () => {
   const fetchRecentCases = async () => {
     setLoading(true);
     try {
-      const response = await casesAPI.getAll({ limit: 6 });
+      const response = await casesAPI.getAll({ 
+        limit: 6,
+        status: 'published' // Only show published cases on home page
+      });
       setRecentCases(response.data.cases || []);
     } catch (error) {
       console.error('Error fetching cases:', error);
@@ -65,9 +68,9 @@ const Home = () => {
       <section className="hero-section">
         <div className="container">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
             className="hero-content"
           >
             <h1>{t('hero.title')}</h1>
@@ -96,18 +99,11 @@ const Home = () => {
         <div className="container">
           <div className="features-grid">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="feature-card card"
-              >
+              <div key={index} className="feature-card card">
                 <feature.icon size={40} className="feature-icon" />
                 <h3>{feature.title}</h3>
                 <p className="text-muted">{feature.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -127,16 +123,10 @@ const Home = () => {
             <div className="loading-state">{t('common.loading')}</div>
           ) : (
             <div className="cases-grid">
-              {recentCases.map((caseItem, index) => (
-                <motion.div
-                  key={caseItem._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
+              {recentCases.map((caseItem) => (
+                <div key={caseItem._id}>
                   <CaseCard caseData={caseItem} />
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
@@ -148,9 +138,8 @@ const Home = () => {
         <div className="container">
           <motion.div
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
             className="about-content"
           >
             <h2>{t('nav.about')}</h2>
