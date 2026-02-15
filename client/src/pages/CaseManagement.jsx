@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
@@ -10,19 +10,21 @@ import {
   ListUl,
   Download,
   Trash,
-  X
+  X,
+  ArrowLeft
 } from 'react-bootstrap-icons';
 import { casesAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import CasesTable from '../components/moderator/CasesTable';
 import CasesGrid from '../components/moderator/CasesGrid';
 import CasePreviewModal from '../components/moderator/CasePreviewModal';
-import { exportCasesToCSV, exportSelectedCasesToCSV } from '../utils/exportCSV';
+import { exportToCSV, exportToXLSX, exportToJSON, exportSelected } from '../utils/exportUtils';
 import './CaseManagement.css';
 
 const CaseManagement = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isModerator, user } = useAuth();
 
   // State
@@ -32,6 +34,11 @@ const CaseManagement = () => {
   const [selectedCases, setSelectedCases] = useState([]);
   const [previewCase, setPreviewCase] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showExportSelectedMenu, setShowExportSelectedMenu] = useState(false);
+
+  // Read initial type from URL params (e.g. /moderator/cases?type=memory)
+  const initialType = searchParams.get('type') || 'all';
 
   // Filters state
   const [filters, setFilters] = useState({
@@ -40,6 +47,7 @@ const CaseManagement = () => {
     yearTo: '',
     district: '',
     status: 'all',
+    type: initialType,
     sortBy: 'createdAt',
     sortOrder: 'desc'
   });
@@ -59,6 +67,21 @@ const CaseManagement = () => {
     }
   }, [isModerator, filters, pagination.page, pagination.pageSize]);
 
+  // Close export menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExportMenu && !event.target.closest('.export-dropdown')) {
+        setShowExportMenu(false);
+      }
+      if (showExportSelectedMenu && !event.target.closest('.export-selected-dropdown')) {
+        setShowExportSelectedMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showExportMenu, showExportSelectedMenu]);
+
   const fetchCases = async () => {
     setLoading(true);
     try {
@@ -68,11 +91,10 @@ const CaseManagement = () => {
         pageSize: pagination.pageSize
       };
 
-      // Remove empty filters
+      // Remove empty filters; keep status='all' so backend returns both draft and published
       Object.keys(params).forEach(key => {
-        if (params[key] === '' || params[key] === 'all') {
-          delete params[key];
-        }
+        if (params[key] === '') delete params[key];
+        else if (params[key] === 'all' && key !== 'status') delete params[key];
       });
 
       const response = await casesAPI.getAll(params);
@@ -103,6 +125,7 @@ const CaseManagement = () => {
       yearTo: '',
       district: '',
       status: 'all',
+      type: 'all',
       sortBy: 'createdAt',
       sortOrder: 'desc'
     });
@@ -129,12 +152,17 @@ const CaseManagement = () => {
     setPreviewCase(caseItem);
   };
 
-  const handleEdit = (caseId) => {
-    navigate(`/moderator/edit-case/${caseId}`);
+  const handleEdit = (caseId, caseType) => {
+    if (caseType === 'memory') {
+      navigate(`/moderator/edit-memory/${caseId}`);
+    } else {
+      navigate(`/moderator/edit-case/${caseId}`);
+    }
   };
 
   const handleDelete = async (caseItem) => {
-    if (window.confirm(`${t('moderator.confirmDelete')} "${caseItem.title}"?`)) {
+    const displayTitle = caseItem.type === 'memory' ? (caseItem.personName || caseItem.title) : caseItem.title;
+    if (window.confirm(`${t('moderator.confirmDelete')} "${displayTitle}"?`)) {
       try {
         await casesAPI.delete(caseItem._id);
         fetchCases();
@@ -175,16 +203,27 @@ const CaseManagement = () => {
     }
   };
 
-  const handleExportAll = () => {
-    exportCasesToCSV(cases);
+  const handleExport = (format) => {
+    switch (format) {
+      case 'xlsx':
+        exportToXLSX(cases);
+        break;
+      case 'json':
+        exportToJSON(cases);
+        break;
+      default:
+        exportToCSV(cases);
+    }
+    setShowExportMenu(false);
   };
 
-  const handleExportSelected = () => {
+  const handleExportSelected = (format) => {
     if (selectedCases.length === 0) {
       alert(t('moderator.noCasesSelected'));
       return;
     }
-    exportSelectedCasesToCSV(cases, selectedCases);
+    exportSelected(cases, selectedCases, format);
+    setShowExportSelectedMenu(false);
   };
 
   const handlePageChange = (newPage) => {
@@ -210,21 +249,47 @@ const CaseManagement = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.15 }}
         >
-          {/* Header */}
+          {/* Back to moderator panel */}
+          <Link to="/moderator" className="back-to-moderator">
+            <ArrowLeft size={20} />
+            {t('moderator.backToDashboard')}
+          </Link>
+
+          {/* Header - title: Істерді басқару / Естеліктерді басқару / Барлығын басқару */}
           <div className="page-header">
             <div className="header-left">
-              <h1>{t('moderator.manageCases')}</h1>
+              <h1>
+                {filters.type === 'case'
+                  ? t('moderator.manageCases')
+                  : filters.type === 'memory'
+                    ? t('moderator.manageMemories')
+                    : t('moderator.manageAll')}
+              </h1>
               <span className="cases-count">
-                {pagination.total} {t('moderator.totalCases').toLowerCase()}
+                {pagination.total}{' '}
+                {filters.type === 'case'
+                  ? t('moderator.totalCases').toLowerCase()
+                  : filters.type === 'memory'
+                    ? t('moderator.totalMemories').toLowerCase()
+                    : t('moderator.totalEntries')}
               </span>
             </div>
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate('/moderator/add-case')}
-            >
-              <PlusCircle size={20} />
-              {t('moderator.addCase')}
-            </button>
+            <div className="header-actions">
+              <button
+                className="btn btn-add-case"
+                onClick={() => navigate('/moderator/add-case')}
+              >
+                <PlusCircle size={20} />
+                {t('moderator.addCase')}
+              </button>
+              <button
+                className="btn btn-add-memory"
+                onClick={() => navigate('/moderator/add-memory')}
+              >
+                <PlusCircle size={20} />
+                {t('moderator.addMemory')}
+              </button>
+            </div>
           </div>
 
           {/* Toolbar */}
@@ -278,11 +343,29 @@ const CaseManagement = () => {
                 </button>
               </div>
 
-              {/* Export */}
-              <button className="btn btn-secondary" onClick={handleExportAll}>
-                <Download size={18} />
-                {t('moderator.exportCSV')}
-              </button>
+              {/* Export Dropdown */}
+              <div className="export-dropdown">
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                >
+                  <Download size={18} />
+                  {t('moderator.export')}
+                </button>
+                {showExportMenu && (
+                  <div className="export-menu">
+                    <button onClick={() => handleExport('csv')}>
+                      CSV
+                    </button>
+                    <button onClick={() => handleExport('xlsx')}>
+                      Excel (XLSX)
+                    </button>
+                    <button onClick={() => handleExport('json')}>
+                      JSON
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -334,6 +417,18 @@ const CaseManagement = () => {
                 </div>
 
                 <div className="filter-group">
+                  <label>{t('moderator.typeLabel')}</label>
+                  <select
+                    value={filters.type}
+                    onChange={(e) => handleFilterChange('type', e.target.value)}
+                  >
+                    <option value="all">{t('moderator.typeAll')}</option>
+                    <option value="case">{t('moderator.typeCase')}</option>
+                    <option value="memory">{t('moderator.typeMemory')}</option>
+                  </select>
+                </div>
+
+                <div className="filter-group">
                   <label>{t('moderator.sortBy')}</label>
                   <select
                     value={filters.sortBy}
@@ -370,10 +465,28 @@ const CaseManagement = () => {
                 {selectedCases.length} {t('moderator.casesSelected')}
               </span>
               <div className="bulk-actions">
-                <button className="btn btn-secondary" onClick={handleExportSelected}>
-                  <Download size={18} />
-                  {t('moderator.exportSelected')}
-                </button>
+                <div className="export-selected-dropdown">
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => setShowExportSelectedMenu(!showExportSelectedMenu)}
+                  >
+                    <Download size={18} />
+                    {t('moderator.exportSelected')}
+                  </button>
+                  {showExportSelectedMenu && (
+                    <div className="export-menu">
+                      <button onClick={() => handleExportSelected('csv')}>
+                        CSV
+                      </button>
+                      <button onClick={() => handleExportSelected('xlsx')}>
+                        Excel (XLSX)
+                      </button>
+                      <button onClick={() => handleExportSelected('json')}>
+                        JSON
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button className="btn btn-danger" onClick={handleBulkDelete}>
                   <Trash size={18} />
                   {t('moderator.deleteSelected')}

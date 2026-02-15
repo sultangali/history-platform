@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Eye, Pencil, Trash, CheckCircle, Circle } from 'react-bootstrap-icons';
+import { formatDate } from '../../utils/dateFormat';
 import './CasesTable.css';
 
 const CasesTable = ({ 
@@ -14,16 +15,12 @@ const CasesTable = ({
 }) => {
   const { t } = useTranslation();
 
-  const formatDate = (dateString) => {
-    if (!dateString) return t('caseDetail.notAvailable');
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const getStatusBadge = (status) => {
-    const statusClass = status === 'published' ? 'badge-success' : 'badge-warning';
+    const value = status || 'published';
+    const statusClass = value === 'published' ? 'badge-success' : 'badge-warning';
     return (
       <span className={`badge ${statusClass}`}>
-        {t(`moderator.${status}`)}
+        {t(`moderator.${value}`)}
       </span>
     );
   };
@@ -47,9 +44,11 @@ const CasesTable = ({
               />
             </th>
             <th>{t('form.caseTitle')}</th>
+            <th>{t('moderator.typeLabel')}</th>
             <th>{t('cases.caseNumber')}</th>
             <th>{t('form.year')}</th>
             <th>{t('form.district')}</th>
+            <th>{t('moderator.createdBy')}</th>
             <th>{t('moderator.status')}</th>
             <th>{t('moderator.createdAt')}</th>
             <th className="actions-col">{t('moderator.actions')}</th>
@@ -58,7 +57,7 @@ const CasesTable = ({
         <tbody>
           {cases.length === 0 ? (
             <tr>
-              <td colSpan="8" className="empty-state">
+              <td colSpan="10" className="empty-state">
                 {t('moderator.noResults')}
               </td>
             </tr>
@@ -73,21 +72,23 @@ const CasesTable = ({
                   />
                 </td>
                 <td className="title-col">
-                  <span className="case-title">{caseItem.title}</span>
+                  <span className="case-title">
+                    {caseItem.type === 'memory' ? (caseItem.personName || caseItem.title) : caseItem.title}
+                  </span>
+                </td>
+                <td>
+                  <span className={`badge ${caseItem.type === 'memory' ? 'badge-accent' : 'badge-info'}`}>
+                    {t(`moderator.${caseItem.type === 'memory' ? 'typeMemory' : 'typeCase'}`)}
+                  </span>
                 </td>
                 <td>{caseItem.caseNumber || '-'}</td>
                 <td>{caseItem.year || '-'}</td>
-                <td>{caseItem.district || '-'}</td>
-                <td>
-                  <button
-                    className="status-badge-btn"
-                    onClick={() => onStatusChange(caseItem)}
-                    title={t('moderator.changeStatus')}
-                  >
-                    {getStatusBadge(caseItem.status)}
-                  </button>
+                <td className="district-col">{caseItem.district || '-'}</td>
+                <td className="creator-col">
+                  {caseItem.createdBy?.fullName || t('caseDetail.notAvailable')}
                 </td>
-                <td className="date-col">{formatDate(caseItem.createdAt)}</td>
+                <td>{getStatusBadge(caseItem.status ?? 'published')}</td>
+                <td className="date-col">{caseItem.createdAt ? formatDate(caseItem.createdAt) : t('caseDetail.notAvailable')}</td>
                 <td className="actions-col">
                   <div className="action-buttons">
                     <button
@@ -99,7 +100,7 @@ const CasesTable = ({
                     </button>
                     <button
                       className="btn-action btn-edit"
-                      onClick={() => onEdit(caseItem._id)}
+                      onClick={() => onEdit(caseItem._id, caseItem.type)}
                       title={t('common.edit')}
                     >
                       <Pencil size={18} />

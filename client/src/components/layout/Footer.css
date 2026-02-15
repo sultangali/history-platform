@@ -1,5 +1,5 @@
 .footer {
-  background: var(--primary-color);
+  background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
   padding: var(--spacing-2xl) 0 var(--spacing-lg);
   margin-top: auto;
@@ -16,7 +16,8 @@
 .footer-section h5 {
   color: var(--accent-light);
   margin-bottom: var(--spacing-md);
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .footer-section p {

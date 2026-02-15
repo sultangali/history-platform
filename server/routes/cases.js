@@ -1,6 +1,7 @@
 import express from 'express';
 import Case from '../models/Case.js';
 import { protect, moderatorOnly } from '../middleware/auth.js';
+import trackPageView from '../middleware/pageView.js';
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.get('/', async (req, res) => {
       yearTo, 
       limit, 
       status,
+      type,
       createdBy,
       sortBy = 'createdAt',
       sortOrder = 'desc',
@@ -24,9 +26,16 @@ router.get('/', async (req, res) => {
 
     let query = {};
 
-    // Text search
-    if (search) {
-      query.$text = { $search: search };
+    // Search by partial match (by letters) in title, personName, description, victims
+    if (search && search.trim()) {
+      const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escaped, 'i');
+      query.$or = [
+        { title: searchRegex },
+        { personName: searchRegex },
+        { description: searchRegex },
+        { victims: searchRegex }
+      ];
     }
 
     // Location filter
@@ -50,9 +59,21 @@ router.get('/', async (req, res) => {
     if (status && status !== 'all') {
       query.status = status;
     } else if (!status) {
-      // By default, show only published cases for public access
-      // Moderators can explicitly request 'all' or 'draft'
       query.status = 'published';
+    }
+
+    // Type filter (case / memory / all). Legacy documents may have no type field — treat as 'case'.
+    if (type && type !== 'all') {
+      if (type === 'memory') {
+        query.type = 'memory';
+      } else {
+        // type === 'case': include documents with type 'case' or without type (legacy)
+        query.$or = [
+          { type: 'case' },
+          { type: { $exists: false } },
+          { type: null }
+        ];
+      }
     }
 
     // CreatedBy filter
@@ -95,9 +116,9 @@ router.get('/', async (req, res) => {
 });
 
 // Get single case
-router.get('/:id', async (req, res) => {
+router.get('/:id', trackPageView, async (req, res) => {
   try {
-    const caseItem = await Case.findById(req.params.id);
+    const caseItem = await Case.findById(req.params.id).populate('createdBy', 'fullName email role');
     if (!caseItem) {
       return res.status(404).json({ message: 'Case not found' });
     }
@@ -220,9 +241,24 @@ router.get('/moderator/statistics', protect, moderatorOnly, async (req, res) => 
     // Total cases
     const total = await Case.countDocuments();
 
-    // Cases by status
+    // Cases by status (normalize null/missing -> 'published')
     const byStatus = await Case.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } }
+      {
+        $group: {
+          _id: { $ifNull: ['$status', 'published'] },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Cases by type (normalize null/missing -> 'case')
+    const byType = await Case.aggregate([
+      {
+        $group: {
+          _id: { $ifNull: ['$type', 'case'] },
+          count: { $sum: 1 }
+        }
+      }
     ]);
 
     // Recent cases (last 5)
@@ -237,6 +273,7 @@ router.get('/moderator/statistics', protect, moderatorOnly, async (req, res) => 
       byDistrict,
       byMonth,
       byStatus,
+      byType,
       recentCases
     });
   } catch (error) {

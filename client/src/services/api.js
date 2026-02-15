@@ -43,10 +43,18 @@ export const usersAPI = {
   delete: (id) => axios.delete(`${API_URL}/users/${id}`)
 };
 
+// Analytics API (Moderator only)
+export const analyticsAPI = {
+  getOverview: () => axios.get(`${API_URL}/analytics/overview`),
+  getPopular: () => axios.get(`${API_URL}/analytics/popular`),
+  getByDate: (from, to, period) => axios.get(`${API_URL}/analytics/by-date`, { params: { from, to, period } })
+};
+
 export default {
   cases: casesAPI,
   suggestions: suggestionsAPI,
   feedback: feedbackAPI,
-  users: usersAPI
+  users: usersAPI,
+  analytics: analyticsAPI
 };
 

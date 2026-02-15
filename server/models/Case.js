@@ -2,11 +2,18 @@ import mongoose from 'mongoose';
 
 const caseSchema = new mongoose.Schema(
   {
-    title: {
+    type: {
       type: String,
-      required: true
+      enum: ['case', 'memory'],
+      default: 'case'
+    },
+    title: {
+      type: String
     },
     caseNumber: {
+      type: String
+    },
+    personName: {
       type: String
     },
     description: {
@@ -58,7 +65,7 @@ const caseSchema = new mongoose.Schema(
 );
 
 // Index for search
-caseSchema.index({ title: 'text', description: 'text', victims: 'text' });
+caseSchema.index({ title: 'text', description: 'text', victims: 'text', personName: 'text' });
 
 const Case = mongoose.model('Case', caseSchema);
 

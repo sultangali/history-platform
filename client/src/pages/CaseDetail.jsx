@@ -10,6 +10,7 @@ import {
   ExclamationTriangle
 } from 'react-bootstrap-icons';
 import { casesAPI, suggestionsAPI } from '../services/api';
+import { formatDate } from '../utils/dateFormat';
 import './CaseDetail.css';
 
 const CaseDetail = () => {
@@ -57,11 +58,6 @@ const CaseDetail = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const formatDate = (date) => {
-    if (!date) return t('caseDetail.notAvailable');
-    return new Date(date).toLocaleDateString();
   };
 
   if (loading) {
@@ -122,8 +118,8 @@ const CaseDetail = () => {
                     <div>
                       <strong>{t('cases.date')}</strong>
                       <p>
-                        {formatDate(caseData.dateFrom)}
-                        {caseData.dateTo && ` - ${formatDate(caseData.dateTo)}`}
+                        {caseData.dateFrom ? formatDate(caseData.dateFrom) : t('caseDetail.notAvailable')}
+                        {caseData.dateTo && ` — ${formatDate(caseData.dateTo)}`}
                       </p>
                     </div>
                   </div>

@@ -1,36 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Search, Archive, Book, People } from 'react-bootstrap-icons';
-import { casesAPI } from '../services/api';
-import CaseCard from '../components/cases/CaseCard';
+import { Search, Archive, People, ChatLeftText } from 'react-bootstrap-icons';
 import './Home.css';
 
 const Home = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [recentCases, setRecentCases] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchRecentCases();
-  }, []);
-
-  const fetchRecentCases = async () => {
-    setLoading(true);
-    try {
-      const response = await casesAPI.getAll({ 
-        limit: 6,
-        status: 'published' // Only show published cases on home page
-      });
-      setRecentCases(response.data.cases || []);
-    } catch (error) {
-      console.error('Error fetching cases:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -42,23 +19,27 @@ const Home = () => {
   const features = [
     {
       icon: Archive,
-      title: t('cases.title'),
-      description: t('home.featureArchive')
+      title: t('home.featureCasesTitle'),
+      description: t('home.featureArchive'),
+      link: '/archive?type=case'
     },
     {
       icon: Search,
-      title: t('hero.search'),
-      description: t('home.featureSearch')
-    },
-    {
-      icon: Book,
-      title: t('app.subtitle').split('.')[1],
-      description: t('home.featureDocuments')
+      title: t('home.featureSearchTitle'),
+      description: t('home.featureSearch'),
+      link: '/archive?search='
     },
     {
       icon: People,
-      title: t('app.subtitle').split('.')[2],
-      description: t('home.featureMemories')
+      title: t('home.featureMemoriesTitle'),
+      description: t('home.featureMemories'),
+      link: '/archive?type=memory'
+    },
+    {
+      icon: ChatLeftText,
+      title: t('home.featureContactTitle'),
+      description: t('home.featureContact'),
+      link: '/contact'
     }
   ];
 
@@ -99,37 +80,15 @@ const Home = () => {
         <div className="container">
           <div className="features-grid">
             {features.map((feature, index) => (
-              <div key={index} className="feature-card card">
-                <feature.icon size={40} className="feature-icon" />
-                <h3>{feature.title}</h3>
-                <p className="text-muted">{feature.description}</p>
-              </div>
+              <Link key={index} to={feature.link} className="feature-card-link">
+                <div className="feature-card card">
+                  <feature.icon size={40} className="feature-icon" />
+                  <h3>{feature.title}</h3>
+                  <p className="text-muted">{feature.description}</p>
+                </div>
+              </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Recent Cases Section */}
-      <section className="recent-cases-section section">
-        <div className="container">
-          <div className="section-header">
-            <h2>{t('cases.title')}</h2>
-            <Link to="/archive" className="btn btn-secondary">
-              {t('home.viewAll')}
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="loading-state">{t('common.loading')}</div>
-          ) : (
-            <div className="cases-grid">
-              {recentCases.map((caseItem) => (
-                <div key={caseItem._id}>
-                  <CaseCard caseData={caseItem} />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -157,4 +116,3 @@ const Home = () => {
 };
 
 export default Home;
-

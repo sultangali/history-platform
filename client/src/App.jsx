@@ -12,6 +12,7 @@ import About from './pages/About';
 import ModeratorDashboard from './pages/ModeratorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import CaseForm from './components/moderator/CaseForm';
+import MemoryForm from './components/moderator/MemoryForm';
 import CaseManagement from './pages/CaseManagement';
 import SuggestionsManagement from './pages/SuggestionsManagement';
 import FeedbackManagement from './pages/FeedbackManagement';
@@ -84,6 +85,22 @@ const AppContent = () => {
             element={
               <ProtectedRoute requireModerator>
                 <CaseForm isEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/moderator/add-memory"
+            element={
+              <ProtectedRoute requireModerator>
+                <MemoryForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/moderator/edit-memory/:id"
+            element={
+              <ProtectedRoute requireModerator>
+                <MemoryForm isEdit />
               </ProtectedRoute>
             }
           />

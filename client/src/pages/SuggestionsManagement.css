@@ -3,6 +3,25 @@
   padding: var(--spacing-2xl) 0;
 }
 
+.back-to-moderator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  color: var(--primary-color, #2c3e50);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.back-to-moderator:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--accent-color, #8b6914);
+}
+
 .page-header {
   margin-bottom: var(--spacing-2xl);
 }

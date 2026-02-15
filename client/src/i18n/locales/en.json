@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Karaganda Region - Political Repression Archive",
-    "subtitle": "Research. Archive Documents. Memories"
+    "subtitle": "Archive Documents. Memories"
   },
   "nav": {
     "home": "Home",
@@ -22,19 +22,25 @@
   "filters": {
     "title": "Filters",
     "location": "Location",
+    "district": "District",
     "year": "Year",
     "yearFrom": "From year",
     "yearTo": "To year",
+    "type": "Record type",
+    "typeAll": "All",
+    "typeCase": "Cases",
+    "typeMemory": "Memories",
     "apply": "Apply",
     "reset": "Reset"
   },
   "cases": {
-    "title": "Cases Catalog",
+    "title": "Catalog",
     "noResults": "No results found",
     "loading": "Loading...",
     "viewDetails": "View Details",
     "caseNumber": "Case №",
     "date": "Date",
+    "dateRange": "Period",
     "location": "Location",
     "victims": "Repressed Persons",
     "description": "Description"
@@ -64,6 +70,7 @@
     "loginLink": "Login"
   },
   "moderator": {
+    "allEditsAll": "All Edits",
     "dashboard": "Moderator Dashboard",
     "manageSuggestions": "Manage Suggestions",
     "manageFeedback": "Manage Feedback",
@@ -90,6 +97,10 @@
     "addCase": "Add New Case",
     "editCase": "Edit Case",
     "manageCases": "Manage Cases",
+    "manageAll": "Manage All",
+    "manageMemories": "Manage Memories",
+    "backToDashboard": "Back to moderator panel",
+    "totalEntries": "entries",
     "allCases": "All Cases",
     "myCases": "My Cases",
     "viewMode": "View Mode",
@@ -99,6 +110,7 @@
     "selectAll": "Select All",
     "deselectAll": "Deselect All",
     "deleteSelected": "Delete Selected",
+    "export": "Export",
     "exportCSV": "Export to CSV",
     "exportSelected": "Export Selected",
     "sortBy": "Sort by",
@@ -117,7 +129,7 @@
     "casesByYear": "Cases by Year",
     "casesByDistrict": "Cases by District",
     "casesByMonth": "Cases by Month",
-    "recentCases": "Recent Cases",
+    "recentCases": "Recent Edits",
     "totalCases": "Total Cases",
     "suggestions": "Edit Suggestions",
     "complaints": "Complaints and Suggestions",
@@ -130,7 +142,34 @@
     "actions": "Actions",
     "noResults": "No cases found",
     "filterBy": "Filter by",
-    "showPerPage": "Show per page"
+    "showPerPage": "Show per page",
+    "addMemory": "Add New Memory",
+    "editMemory": "Edit Memory",
+    "memoryDescription": "Memory Description",
+    "personName": "Full Name",
+    "personNamePlaceholder": "Enter person's full name",
+    "totalMemories": "Total Memories",
+    "typeLabel": "Type",
+    "typeCase": "Case",
+    "typeMemory": "Memory",
+    "typeAll": "All Types",
+    "visitorStats": "Visitor Statistics",
+    "visitorsToday": "Today",
+    "visitorsWeek": "This Week",
+    "visitorsMonth": "This Month",
+    "visitorsQuarter": "This Quarter",
+    "visitorsHalfYear": "This Half Year",
+    "visitorsAllTime": "All Time",
+    "dailyVisitors": "Daily Visitors",
+    "popularEntries": "Popular Entries",
+    "viewsCount": "views",
+    "viewsByType": "Views by Type",
+    "viewsByStatus": "Views by Status",
+    "createdBy": "Created by",
+    "week": "Week",
+    "month": "Month",
+    "quarter": "Quarter",
+    "halfYear": "Half Year"
   },
   "admin": {
     "dashboard": "Admin Dashboard",
@@ -209,10 +248,14 @@
     "copyright": "© 2025 Karaganda Region Archive. All rights reserved."
   },
   "home": {
+    "featureCasesTitle": "Cases Catalog",
+    "featureSearchTitle": "Search",
+    "featureMemoriesTitle": "Memories",
+    "featureContactTitle": "Contact Us",
     "featureArchive": "Comprehensive database of historical documents and cases",
     "featureSearch": "Search and filter by location, year, and names",
-    "featureDocuments": "Access to archive documents and historical records",
     "featureMemories": "Memories and testimonies from survivors",
+    "featureContact": "Contact us with questions and suggestions",
     "viewAll": "View All",
     "learnMore": "Learn More",
     "aboutText": "This archive is dedicated to preserving the memory of those who suffered during the political repressions in Karaganda Region. Our mission is to document and make accessible the historical records, providing a resource for researchers, families, and anyone interested in this important period of history."
@@ -235,8 +278,8 @@
     "historicalContextText2": "We work with historians, researchers, and descendants of those affected to continuously improve and expand our database, ensuring accuracy and comprehensiveness in our documentation."
   },
   "archive": {
-    "foundCases": "Found {{count}} cases",
-    "foundCase": "Found {{count}} case"
+    "foundCases": "Found {{count}} records",
+    "foundCase": "Found {{count}} record"
   },
   "contact": {
     "appreciateText": "We appreciate your feedback and suggestions to improve our archive.",

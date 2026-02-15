@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Eye, Trash, Reply, CheckCircle } from 'react-bootstrap-icons';
+import { Eye, Trash, Reply, CheckCircle, ArrowLeft } from 'react-bootstrap-icons';
 import { feedbackAPI } from '../services/api';
+import { formatDate, formatDateTime } from '../utils/dateFormat';
 import './FeedbackManagement.css';
 
 const FeedbackManagement = () => {
@@ -103,6 +105,11 @@ const FeedbackManagement = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.15 }}
         >
+          <Link to="/moderator" className="back-to-moderator">
+            <ArrowLeft size={20} />
+            {t('moderator.backToDashboard')}
+          </Link>
+
           <div className="page-header">
             <h1>{t('moderator.complaints')}</h1>
             <p className="subtitle">{t('moderator.manageFeedback')}</p>
@@ -155,7 +162,7 @@ const FeedbackManagement = () => {
                     </div>
                     <div className="feedback-meta">
                       <span className="date">
-                        {new Date(feedback.createdAt).toLocaleDateString()}
+                        {formatDate(feedback.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -224,19 +231,19 @@ const FeedbackManagement = () => {
             <div className="modal-body">
               <div className="detail-row">
                 <strong>{t('form.name')}:</strong>
-                <p>{selectedFeedback.name || selectedFeedback.subject || '—'}</p>
+                <p>{selectedFeedback.name || selectedFeedback.subject || '-'}</p>
               </div>
               <div className="detail-row">
                 <strong>{t('form.email')}:</strong>
-                <p>{selectedFeedback.email || '—'}</p>
+                <p>{selectedFeedback.email || '-'}</p>
               </div>
               <div className="detail-row">
                 <strong>{t('form.message')}:</strong>
-                <p>{selectedFeedback.message || '—'}</p>
+                <p>{selectedFeedback.message || '-'}</p>
               </div>
               <div className="detail-row">
                 <strong>{t('moderator.createdAt')}:</strong>
-                <p>{selectedFeedback.createdAt ? new Date(selectedFeedback.createdAt).toLocaleString() : '—'}</p>
+                <p>{selectedFeedback.createdAt ? formatDateTime(selectedFeedback.createdAt) : '-'}</p>
               </div>
 
               {/* Reply Form */}

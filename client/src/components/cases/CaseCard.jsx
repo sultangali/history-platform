@@ -1,15 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Calendar, GeoAlt, People } from 'react-bootstrap-icons';
+import { formatDate } from '../../utils/dateFormat';
 import './CaseCard.css';
 
 const CaseCard = ({ caseData }) => {
   const { t } = useTranslation();
-
-  const formatDate = (date) => {
-    if (!date) return t('caseDetail.notAvailable');
-    return new Date(date).toLocaleDateString();
-  };
 
   return (
     <div className="case-card card">
@@ -29,8 +25,8 @@ const CaseCard = ({ caseData }) => {
           <div className="case-info-item">
             <Calendar size={16} />
             <span>
-              {formatDate(caseData.dateFrom)}
-              {caseData.dateTo && ` - ${formatDate(caseData.dateTo)}`}
+              {caseData.dateFrom ? formatDate(caseData.dateFrom) : t('caseDetail.notAvailable')}
+              {caseData.dateTo && ` — ${formatDate(caseData.dateTo)}`}
             </span>
           </div>
         )}

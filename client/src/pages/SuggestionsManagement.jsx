@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { CheckCircle, XCircle, Eye, Trash } from 'react-bootstrap-icons';
+import { CheckCircle, XCircle, Eye, Trash, ArrowLeft } from 'react-bootstrap-icons';
 import { suggestionsAPI } from '../services/api';
+import { formatDate, formatDateTime } from '../utils/dateFormat';
 import './SuggestionsManagement.css';
 
 const SuggestionsManagement = () => {
@@ -85,6 +87,11 @@ const SuggestionsManagement = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.15 }}
         >
+          <Link to="/moderator" className="back-to-moderator">
+            <ArrowLeft size={20} />
+            {t('moderator.backToDashboard')}
+          </Link>
+
           <div className="page-header">
             <h1>{t('moderator.suggestions')}</h1>
             <p className="subtitle">{t('moderator.manageSuggestions')}</p>
@@ -140,7 +147,7 @@ const SuggestionsManagement = () => {
                       </div>
                       <div className="suggestion-meta">
                         <span className="date">
-                          {suggestion.createdAt && new Date(suggestion.createdAt).toLocaleDateString()}
+                          {suggestion.createdAt && formatDate(suggestion.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -221,7 +228,7 @@ const SuggestionsManagement = () => {
               </div>
               <div className="detail-row">
                 <strong>{t('feedback.message')}:</strong>
-                <p>{selectedSuggestion.message || selectedSuggestion.description || '—'}</p>
+                <p>{selectedSuggestion.message || selectedSuggestion.description || '-'}</p>
               </div>
               {(selectedSuggestion.submittedBy || selectedSuggestion.email) && (
                 <div className="detail-row">
@@ -231,7 +238,7 @@ const SuggestionsManagement = () => {
               )}
               <div className="detail-row">
                 <strong>{t('moderator.createdAt')}:</strong>
-                <p>{selectedSuggestion.createdAt ? new Date(selectedSuggestion.createdAt).toLocaleString() : '—'}</p>
+                <p>{selectedSuggestion.createdAt ? formatDateTime(selectedSuggestion.createdAt) : '-'}</p>
               </div>
             </div>
             <div className="modal-footer">

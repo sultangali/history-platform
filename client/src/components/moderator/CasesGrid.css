@@ -13,6 +13,9 @@
   transition: opacity 0.15s;
   position: relative;
   border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
 }
 
 .case-grid-card:hover {
@@ -87,22 +90,52 @@
   color: #856404;
 }
 
+.badge-info {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge-accent {
+  background: #f5e6d3;
+  color: #8b6914;
+}
+
 .card-content {
   padding: 48px 20px 16px;
   cursor: pointer;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .card-title {
   font-size: 1.2rem;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   font-family: Georgia, serif;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.card-type-row {
+  margin-bottom: 12px;
+}
+
+.card-type-row .badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+}
+
+.card-body-fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-meta {
@@ -122,8 +155,14 @@
 .card-description {
   color: #555;
   line-height: 1.5;
-  margin: 12px 0;
+  margin: 12px 0 0;
   font-size: 0.9rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
 }
 
 .card-victims {
@@ -141,6 +180,25 @@
   color: #666;
 }
 
+.card-creator {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+.creator-label {
+  color: #999;
+}
+
+.creator-name {
+  color: #666;
+  font-weight: 500;
+}
+
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -148,6 +206,7 @@
   padding: 12px 20px;
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
+  flex-shrink: 0;
 }
 
 .card-date {
@@ -212,6 +271,10 @@
   .cases-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .case-grid-card {
+    min-height: 340px;
   }
 
   .card-title {

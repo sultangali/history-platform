@@ -9,6 +9,7 @@ import {
   People,
   Pencil
 } from 'react-bootstrap-icons';
+import { formatDate } from '../../utils/dateFormat';
 import './CasePreviewModal.css';
 
 const CasePreviewModal = ({ caseData, isOpen, onClose }) => {
@@ -20,11 +21,6 @@ const CasePreviewModal = ({ caseData, isOpen, onClose }) => {
   const handleEdit = () => {
     navigate(`/moderator/edit-case/${caseData._id}`);
     onClose();
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return t('caseDetail.notAvailable');
-    return new Date(dateString).toLocaleDateString();
   };
 
   const getStatusBadge = (status) => {
@@ -91,7 +87,7 @@ const CasePreviewModal = ({ caseData, isOpen, onClose }) => {
                   <span className="info-label">{t('cases.date')}:</span>
                   <span className="info-value">
                     {caseData.year || formatDate(caseData.dateFrom)}
-                    {caseData.dateTo && ` - ${formatDate(caseData.dateTo)}`}
+                    {caseData.dateTo && ` — ${formatDate(caseData.dateTo)}`}
                   </span>
                 </div>
               </div>
@@ -124,7 +120,7 @@ const CasePreviewModal = ({ caseData, isOpen, onClose }) => {
                     {t('common.created')}: {caseData.createdBy.fullName || caseData.createdBy.email}
                   </span>
                   <span className="text-muted">
-                    {formatDate(caseData.createdAt)}
+                    {caseData.createdAt ? formatDate(caseData.createdAt) : t('caseDetail.notAvailable')}
                   </span>
                 </div>
               )}

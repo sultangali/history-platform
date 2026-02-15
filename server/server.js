@@ -7,6 +7,7 @@ import casesRoutes from './routes/cases.js';
 import suggestionsRoutes from './routes/suggestions.js';
 import feedbackRoutes from './routes/feedback.js';
 import usersRoutes from './routes/users.js';
+import analyticsRoutes from './routes/analytics.js';
 
 // Загружаем переменные окружения из .env файла
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/api/cases', casesRoutes);
 app.use('/api/suggestions', suggestionsRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

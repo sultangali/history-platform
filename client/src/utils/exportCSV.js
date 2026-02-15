@@ -1,3 +1,5 @@
+import { formatDate } from './dateFormat';
+
 /**
  * Экспорт дел в CSV формат
  * @param {Array} cases - Массив дел для экспорта
@@ -38,16 +40,6 @@ export const exportCasesToCSV = (cases, filename) => {
     }
     
     return stringValue;
-  };
-
-  // Форматирование даты
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    try {
-      return new Date(dateString).toLocaleDateString('ru-RU');
-    } catch (e) {
-      return '';
-    }
   };
 
   // Формирование строк данных

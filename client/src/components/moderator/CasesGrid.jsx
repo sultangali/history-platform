@@ -8,6 +8,7 @@ import {
   FileText,
   CheckCircleFill
 } from 'react-bootstrap-icons';
+import { formatDate } from '../../utils/dateFormat';
 import './CasesGrid.css';
 
 const CasesGrid = ({ 
@@ -21,16 +22,12 @@ const CasesGrid = ({
 }) => {
   const { t } = useTranslation();
 
-  const formatDate = (dateString) => {
-    if (!dateString) return t('caseDetail.notAvailable');
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const getStatusBadge = (status) => {
-    const statusClass = status === 'published' ? 'badge-success' : 'badge-warning';
+    const value = status || 'published';
+    const statusClass = value === 'published' ? 'badge-success' : 'badge-warning';
     return (
       <span className={`badge ${statusClass}`}>
-        {t(`moderator.${status}`)}
+        {t(`moderator.${value}`)}
       </span>
     );
   };
@@ -69,19 +66,28 @@ const CasesGrid = ({
               )}
             </div>
 
-            {/* Status Badge */}
-            <button
-              className="status-badge-btn"
-              onClick={() => onStatusChange(caseItem)}
-            >
-              {getStatusBadge(caseItem.status)}
-            </button>
+            {/* Status badge only at top-right */}
+            <div className="card-badges">
+              <button
+                className="status-badge-btn"
+                onClick={() => onStatusChange(caseItem)}
+              >
+                {getStatusBadge(caseItem.status ?? 'published')}
+              </button>
+            </div>
 
             {/* Card Content */}
             <div className="card-content" onClick={() => onPreview(caseItem)}>
-              <h3 className="card-title">{caseItem.title}</h3>
+              <h3 className="card-title">
+                {caseItem.type === 'memory' ? (caseItem.personName || caseItem.title) : caseItem.title}
+              </h3>
+              <div className="card-type-row">
+                <span className={`badge ${caseItem.type === 'memory' ? 'badge-accent' : 'badge-info'}`}>
+                  {t(`moderator.${caseItem.type === 'memory' ? 'typeMemory' : 'typeCase'}`)}
+                </span>
+              </div>
 
-              {caseItem.caseNumber && (
+              {caseItem.caseNumber && caseItem.type !== 'memory' && (
                 <div className="card-meta">
                   <FileText size={16} />
                   <span>{caseItem.caseNumber}</span>
@@ -106,27 +112,36 @@ const CasesGrid = ({
                 </div>
               )}
 
-              {caseItem.description && (
-                <p className="card-description">
-                  {caseItem.description.length > 150
-                    ? `${caseItem.description.substring(0, 150)}...`
-                    : caseItem.description}
-                </p>
-              )}
+              <div className="card-body-fill">
+                {caseItem.description && (
+                  <p className="card-description">
+                    {caseItem.description.length > 150
+                      ? `${caseItem.description.substring(0, 150)}...`
+                      : caseItem.description}
+                  </p>
+                )}
 
-              {caseItem.victims && caseItem.victims.length > 0 && (
-                <div className="card-victims">
-                  <span className="victims-count">
-                    {caseItem.victims.length} {t('cases.victims').toLowerCase()}
-                  </span>
-                </div>
-              )}
+                {caseItem.victims && caseItem.victims.length > 0 && (
+                  <div className="card-victims">
+                    <span className="victims-count">
+                      {caseItem.victims.length} {t('cases.victims').toLowerCase()}
+                    </span>
+                  </div>
+                )}
+
+                {caseItem.createdBy && (
+                  <div className="card-creator">
+                    <span className="creator-label">{t('moderator.createdBy')}:</span>
+                    <span className="creator-name">{caseItem.createdBy.fullName}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Card Footer */}
             <div className="card-footer">
               <span className="card-date">
-                {formatDate(caseItem.createdAt)}
+                {caseItem.createdAt ? formatDate(caseItem.createdAt) : t('caseDetail.notAvailable')}
               </span>
               <div className="card-actions">
                 <button
@@ -138,7 +153,7 @@ const CasesGrid = ({
                 </button>
                 <button
                   className="btn-action btn-edit"
-                  onClick={() => onEdit(caseItem._id)}
+                  onClick={() => onEdit(caseItem._id, caseItem.type)}
                   title={t('common.edit')}
                 >
                   <Pencil size={18} />

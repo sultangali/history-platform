@@ -2,11 +2,16 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 
 .case-card:hover {
   border-color: var(--accent-color);
+  box-shadow: var(--shadow);
 }
 
 .case-card-header {
@@ -16,9 +21,11 @@
 }
 
 .case-card-header h3 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--primary-color);
   margin: 0;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .case-card-body {
@@ -45,7 +52,7 @@
   margin-top: var(--spacing-sm);
   color: var(--text-secondary);
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .case-card-footer {
@@ -57,5 +64,5 @@
 .case-card-footer .btn {
   width: 100%;
   justify-content: center;
+  border-radius: var(--border-radius);
 }
-
