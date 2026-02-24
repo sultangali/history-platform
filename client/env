@@ -1,0 +1,2 @@
+PROJECT_MODE=prod
+VITE_API_URL=https://karagandymemory.kz/api
