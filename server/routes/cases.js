@@ -208,19 +208,39 @@ router.get('/moderator/my-cases', protect, moderatorOnly, async (req, res) => {
 // Get statistics (Moderator only)
 router.get('/moderator/statistics', protect, moderatorOnly, async (req, res) => {
   try {
-    // Cases by year
+    // Cases by year: use year field or derive from dateFrom so no documents are lost
     const byYear = await Case.aggregate([
-      { $match: { year: { $ne: null } } },
-      { $group: { _id: '$year', count: { $sum: 1 } } },
+      {
+        $addFields: {
+          resolvedYear: {
+            $cond: {
+              if: { $and: [{ $ne: ['$year', null] }, { $ne: ['$year', ''] }] },
+              then: '$year',
+              else: { $year: '$dateFrom' }
+            }
+          }
+        }
+      },
+      { $match: { resolvedYear: { $ne: null, $gte: 1900, $lte: 2100 } } },
+      { $group: { _id: '$resolvedYear', count: { $sum: 1 } } },
       { $sort: { _id: 1 } }
     ]);
 
-    // Cases by district
+    // Cases by district: include all districts (no limit), treat null/empty as one group
     const byDistrict = await Case.aggregate([
-      { $match: { district: { $ne: null, $ne: '' } } },
-      { $group: { _id: '$district', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 10 }
+      {
+        $addFields: {
+          districtLabel: {
+            $cond: {
+              if: { $or: [{ $eq: ['$district', null] }, { $eq: ['$district', ''] }] },
+              then: '—',
+              else: '$district'
+            }
+          }
+        }
+      },
+      { $group: { _id: '$districtLabel', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
     ]);
 
     // Cases by month (created)
@@ -240,6 +260,13 @@ router.get('/moderator/statistics', protect, moderatorOnly, async (req, res) => 
 
     // Total cases
     const total = await Case.countDocuments();
+
+    // Current moderator's counts (by type)
+    const userId = req.user._id;
+    const [myCasesCount, myMemoriesCount] = await Promise.all([
+      Case.countDocuments({ createdBy: userId, type: { $ne: 'memory' } }),
+      Case.countDocuments({ createdBy: userId, type: 'memory' })
+    ]);
 
     // Cases by status (normalize null/missing -> 'published')
     const byStatus = await Case.aggregate([
@@ -261,14 +288,40 @@ router.get('/moderator/statistics', protect, moderatorOnly, async (req, res) => 
       }
     ]);
 
+    // By type and status (for cards: published/draft per type)
+    const byTypeStatus = await Case.aggregate([
+      {
+        $group: {
+          _id: {
+            type: { $ifNull: ['$type', 'case'] },
+            status: { $ifNull: ['$status', 'published'] }
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
     // Recent cases (last 5)
     const recentCases = await Case.find()
       .sort({ createdAt: -1 })
       .limit(5)
       .populate('createdBy', 'fullName');
 
+    const totalCases = byType.find((x) => x._id === 'case')?.count ?? 0;
+    const totalMemories = byType.find((x) => x._id === 'memory')?.count ?? 0;
+    const getTypeStatus = (type, status) =>
+      byTypeStatus.find((x) => x._id.type === type && x._id.status === status)?.count ?? 0;
+
     res.json({
       total,
+      myCases: myCasesCount,
+      myMemories: myMemoriesCount,
+      totalCases,
+      totalMemories,
+      casesPublished: getTypeStatus('case', 'published'),
+      casesDraft: getTypeStatus('case', 'draft'),
+      memoriesPublished: getTypeStatus('memory', 'published'),
+      memoriesDraft: getTypeStatus('memory', 'draft'),
       byYear,
       byDistrict,
       byMonth,

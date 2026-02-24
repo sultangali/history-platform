@@ -106,6 +106,30 @@
   padding: var(--spacing-2xl) 0;
 }
 
+.archive-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.archive-pagination.pagination-top {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.archive-pagination .page-info {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.archive-pagination .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .archive-toolbar {
   display: flex;
   justify-content: space-between;

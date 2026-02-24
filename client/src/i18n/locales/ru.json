@@ -128,6 +128,12 @@
     "statistics": "Статистика",
     "casesByYear": "Дела по годам",
     "casesByDistrict": "Дела по районам",
+    "countLabel": "Количество",
+    "legendByYear": "Цвета по десятилетиям",
+    "legendByDistrict": "Цвета по районам",
+    "legendByQuantity": "Цвет по количеству",
+    "quantityFew": "Мало",
+    "quantityMany": "Много",
     "casesByMonth": "Дела по месяцам",
     "recentCases": "Недавние",
     "totalCases": "Всего дел",
@@ -149,6 +155,10 @@
     "personName": "ФИО",
     "personNamePlaceholder": "Введите ФИО человека",
     "totalMemories": "Всего воспоминаний",
+    "myEntries": "Мои записи",
+    "totalInDatabase": "Всего в базе",
+    "showMyEntriesOnly": "Только мои записи",
+    "recordNumber": "№",
     "typeLabel": "Тип",
     "typeCase": "Дело",
     "typeMemory": "Воспоминание",
@@ -279,7 +289,8 @@
   },
   "archive": {
     "foundCases": "Найдено {{count}} записей",
-    "foundCase": "Найдено {{count}} запись"
+    "foundCase": "Найдено {{count}} запись",
+    "showingRange": "{{from}}–{{to}} из {{total}}"
   },
   "contact": {
     "appreciateText": "Мы ценим ваши отзывы и предложения по улучшению нашего архива.",

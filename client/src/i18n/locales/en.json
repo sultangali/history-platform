@@ -128,6 +128,12 @@
     "statistics": "Statistics",
     "casesByYear": "Cases by Year",
     "casesByDistrict": "Cases by District",
+    "countLabel": "Count",
+    "legendByYear": "Colors by decade",
+    "legendByDistrict": "Colors by district",
+    "legendByQuantity": "Color by quantity",
+    "quantityFew": "Few",
+    "quantityMany": "Many",
     "casesByMonth": "Cases by Month",
     "recentCases": "Recent Edits",
     "totalCases": "Total Cases",
@@ -149,6 +155,10 @@
     "personName": "Full Name",
     "personNamePlaceholder": "Enter person's full name",
     "totalMemories": "Total Memories",
+    "myEntries": "My entries",
+    "totalInDatabase": "Total in database",
+    "showMyEntriesOnly": "Show only my entries",
+    "recordNumber": "№",
     "typeLabel": "Type",
     "typeCase": "Case",
     "typeMemory": "Memory",
@@ -279,7 +289,8 @@
   },
   "archive": {
     "foundCases": "Found {{count}} records",
-    "foundCase": "Found {{count}} record"
+    "foundCase": "Found {{count}} record",
+    "showingRange": "{{from}}–{{to}} of {{total}}"
   },
   "contact": {
     "appreciateText": "We appreciate your feedback and suggestions to improve our archive.",

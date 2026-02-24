@@ -26,6 +26,8 @@ const ModeratorDashboard = () => {
   const [stats, setStats] = useState({
     totalCases: 0,
     totalMemories: 0,
+    myCases: 0,
+    myMemories: 0,
     pendingSuggestions: 0,
     approvedSuggestions: 0,
     rejectedSuggestions: 0,
@@ -64,13 +66,15 @@ const ModeratorDashboard = () => {
         casesAPI.getStatistics()
       ]);
 
-      const allCases = casesRes.data.cases || [];
-      const casesOnly = allCases.filter(c => c.type !== 'memory');
-      const memoriesOnly = allCases.filter(c => c.type === 'memory');
-      const draftCasesCount = casesOnly.filter(c => c.status === 'draft').length;
-      const publishedCasesCount = casesOnly.filter(c => c.status === 'published').length;
-      const draftMemoriesCount = memoriesOnly.filter(c => c.status === 'draft').length;
-      const publishedMemoriesCount = memoriesOnly.filter(c => c.status === 'published').length;
+      const statisticsData = statisticsRes.data || {};
+      const totalCases = statisticsData.totalCases ?? 0;
+      const totalMemories = statisticsData.totalMemories ?? 0;
+      const myCases = statisticsData.myCases ?? 0;
+      const myMemories = statisticsData.myMemories ?? 0;
+      const publishedCases = statisticsData.casesPublished ?? 0;
+      const draftCases = statisticsData.casesDraft ?? 0;
+      const publishedMemories = statisticsData.memoriesPublished ?? 0;
+      const draftMemories = statisticsData.memoriesDraft ?? 0;
 
       const suggestionsData = suggestionsRes.data || [];
       const pendingSugg = suggestionsData.filter((s) => s.status === 'pending').length;
@@ -82,8 +86,10 @@ const ModeratorDashboard = () => {
       const readFb = feedbackData.length - unreadFb;
 
       setStats({
-        totalCases: casesOnly.length,
-        totalMemories: memoriesOnly.length,
+        totalCases,
+        totalMemories,
+        myCases,
+        myMemories,
         pendingSuggestions: pendingSugg,
         approvedSuggestions: approvedSugg,
         rejectedSuggestions: rejectedSugg,
@@ -91,10 +97,10 @@ const ModeratorDashboard = () => {
         unreadFeedback: unreadFb,
         readFeedback: readFb,
         totalFeedback: feedbackData.length,
-        draftCases: draftCasesCount,
-        publishedCases: publishedCasesCount,
-        draftMemories: draftMemoriesCount,
-        publishedMemories: publishedMemoriesCount
+        draftCases,
+        publishedCases,
+        draftMemories,
+        publishedMemories
       });
 
       setSuggestions(
@@ -264,7 +270,10 @@ const ModeratorDashboard = () => {
                   <div className="stat-card card clickable">
                     <FileText size={32} className="stat-icon" />
                     <div className="stat-info">
-                      <h3>{stats.totalCases}</h3>
+                      <p className="stat-meta">
+                        <span className="stat-meta-item">{t('moderator.myEntries')}: <strong>{stats.myCases}</strong></span>
+                        <span className="stat-meta-item">{t('moderator.totalInDatabase')}: <strong>{stats.totalCases}</strong></span>
+                      </p>
                       <p className="stat-label">{t('moderator.totalCases')}</p>
                       <div className="stat-details">
                         <span className="text-success">{stats.publishedCases} {t('moderator.published').toLowerCase()}</span>
@@ -278,7 +287,10 @@ const ModeratorDashboard = () => {
                   <div className="stat-card card clickable">
                     <JournalText size={32} className="stat-icon" />
                     <div className="stat-info">
-                      <h3>{stats.totalMemories}</h3>
+                      <p className="stat-meta">
+                        <span className="stat-meta-item">{t('moderator.myEntries')}: <strong>{stats.myMemories}</strong></span>
+                        <span className="stat-meta-item">{t('moderator.totalInDatabase')}: <strong>{stats.totalMemories}</strong></span>
+                      </p>
                       <p className="stat-label">{t('moderator.totalMemories')}</p>
                       <div className="stat-details">
                         <span className="text-success">{stats.publishedMemories} {t('moderator.published').toLowerCase()}</span>
@@ -648,55 +660,147 @@ const ModeratorDashboard = () => {
                   </div>
                 )}
 
-                {/* Cases by Year bar chart */}
-                {statistics?.byYear?.length > 0 && (
-                  <div className="stat-block card" style={{ marginTop: 'var(--spacing-lg)' }}>
-                    <h3>{t('moderator.casesByYear')}</h3>
-                    <div className="chart-container">
-                      <div className="bar-chart">
-                        {statistics.byYear.slice(0, 10).map((item) => {
-                          const maxCount = Math.max(...statistics.byYear.map(i => i.count));
-                          const height = (item.count / maxCount) * 100;
-                          return (
-                            <div key={item._id} className="chart-bar-wrapper">
-                              <div className="chart-bar-container">
-                                <div
-                                  className="chart-bar"
-                                  style={{ height: `${height}%` }}
-                                  title={`${item._id}: ${item.count}`}
-                                >
-                                  <span className="bar-value">{item.count}</span>
+                {/* Cases by Year bar chart with axes and grid */}
+                {statistics?.byYear?.length > 0 && (() => {
+                  const YEAR_COLORS = ['#2c5f7c', '#3d7a9e', '#5a9bb8', '#7eb8d4', '#a67c52', '#8b6914'];
+                  const getDecade = (y) => Math.floor(Number(y) / 10) * 10;
+                  const byYearData = statistics.byYear;
+                  const maxCount = Math.max(...byYearData.map(i => i.count), 1);
+                  const step = Math.ceil(maxCount / 5) || 1;
+                  const yMax = Math.ceil(maxCount / step) * step;
+                  const yTicks = [];
+                  for (let v = 0; v <= yMax; v += step) yTicks.push(v);
+                  if (yTicks[yTicks.length - 1] !== maxCount && maxCount > yTicks[yTicks.length - 1]) yTicks.push(maxCount);
+                  const yTicksTopToBottom = [...yTicks].reverse();
+                  const chartHeight = 220;
+                  const decadesUsed = [...new Set(byYearData.map((i) => getDecade(i._id)))].sort((a, b) => a - b);
+                  const decadeToColor = {};
+                  decadesUsed.forEach((d, idx) => { decadeToColor[d] = YEAR_COLORS[idx % YEAR_COLORS.length]; });
+                  return (
+                    <div className="stat-block card stat-chart-card stat-chart-year" style={{ marginTop: 'var(--spacing-lg)' }}>
+                      <h3>{t('moderator.casesByYear')}</h3>
+                      <div className="chart-y-axis-label">{t('moderator.countLabel')}</div>
+                      <div className="chart-with-axes">
+                        <div className="chart-y-axis">
+                          {yTicksTopToBottom.map((tick) => (
+                            <span key={tick} className="chart-y-tick">{tick}</span>
+                          ))}
+                        </div>
+                        <div className="chart-area">
+                          <div className="chart-grid-h" style={{ height: chartHeight }}>
+                            {yTicks.slice(1).map((_, i) => (
+                              <div key={i} className="chart-grid-line-h" style={{ bottom: `${(i + 1) * (100 / yTicks.length)}%` }} />
+                            ))}
+                          </div>
+                          <div className="chart-grid-v" style={{ height: chartHeight }}>
+                            {Array.from({ length: byYearData.length - 1 }, (_, i) => (
+                              <div key={i} className="chart-grid-line-v" style={{ left: `${(i + 1) * (100 / byYearData.length)}%` }} />
+                            ))}
+                          </div>
+                          <div className="bar-chart" style={{ height: chartHeight }}>
+                            {byYearData.map((item) => {
+                              const heightPct = yMax > 0 ? Math.min(100, (item.count / yMax) * 100) : 0;
+                              const decade = getDecade(item._id);
+                              const barColor = decadeToColor[decade] || YEAR_COLORS[0];
+                              return (
+                                <div key={`year-${item._id}`} className="chart-bar-wrapper">
+                                  <div className="chart-bar-container" style={{ height: chartHeight }}>
+                                    <div
+                                      className="chart-bar"
+                                      style={{ height: `${heightPct}%`, background: barColor, boxShadow: `0 2px 6px ${barColor}40` }}
+                                      title={`${item._id}: ${item.count}`}
+                                    >
+                                      <span className="bar-value">{item.count}</span>
+                                    </div>
+                                  </div>
+                                  <span className="chart-label">{item._id || 'N/A'}</span>
                                 </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="chart-x-axis-label">{t('moderator.year')}</div>
+                      <div className="chart-legend">
+                        <span className="chart-legend-title">{t('moderator.legendByYear')}</span>
+                        <div className="chart-legend-items">
+                          {decadesUsed.map((d) => (
+                            <span key={d} className="chart-legend-item">
+                              <span className="chart-legend-swatch" style={{ background: decadeToColor[d] }} />
+                              <span>{d}–{d + 9}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Cases by District horizontal bars with grid — color by quantity */}
+                {statistics?.byDistrict?.length > 0 && (() => {
+                  const COLOR_LOW = '#5a9bb8';
+                  const COLOR_HIGH = '#8b6914';
+                  const lerpHex = (a, b, t) => {
+                    const r = (c) => parseInt(c.slice(1, 3), 16);
+                    const g = (c) => parseInt(c.slice(3, 5), 16);
+                    const bl = (c) => parseInt(c.slice(5, 7), 16);
+                    const R = Math.round(r(a) + (r(b) - r(a)) * t);
+                    const G = Math.round(g(a) + (g(b) - g(a)) * t);
+                    const B = Math.round(bl(a) + (bl(b) - bl(a)) * t);
+                    return '#' + [R, G, B].map((x) => x.toString(16).padStart(2, '0')).join('');
+                  };
+                  const districts = statistics.byDistrict;
+                  const maxD = Math.max(...districts.map((i) => i.count), 1);
+                  const minD = Math.min(...districts.map((i) => i.count), 0);
+                  const getColorByCount = (count) => {
+                    if (maxD <= minD) return COLOR_LOW;
+                    const t = (count - minD) / (maxD - minD);
+                    return lerpHex(COLOR_LOW, COLOR_HIGH, t);
+                  };
+                  return (
+                    <div className="stat-block card stat-chart-card stat-chart-district" style={{ marginTop: 'var(--spacing-lg)' }}>
+                      <h3>{t('moderator.casesByDistrict')}</h3>
+                      <div className="stat-district-header">
+                        <span className="stat-district-col-label">{t('form.district')}</span>
+                        <span className="stat-district-col-value">{t('moderator.countLabel')}</span>
+                      </div>
+                      <div className="stat-list stat-list-with-grid">
+                        {districts.map((item, index) => {
+                          const pct = maxD > 0 ? (item.count / maxD) * 100 : 0;
+                          const barWidth = Math.max(pct, item.count > 0 ? 3 : 0);
+                          const barColor = getColorByCount(item.count);
+                          const label = item._id === '—' ? t('caseDetail.notAvailable') : (item._id || t('caseDetail.notAvailable'));
+                          return (
+                            <div key={`district-${index}-${item._id || 'n'}`} className="stat-item stat-item-district">
+                              <span className="stat-label">{label}</span>
+                              <div className="stat-bar-wrapper">
+                                <div className="stat-bar-bg" />
+                                <div
+                                  className="stat-bar"
+                                  style={{ width: `${barWidth}%`, background: barColor, boxShadow: `0 2px 4px ${barColor}40` }}
+                                  title={`${label}: ${item.count}`}
+                                />
                               </div>
-                              <span className="chart-label">{item._id || 'N/A'}</span>
+                              <span className="stat-value">{item.count}</span>
                             </div>
                           );
                         })}
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Cases by District horizontal bars */}
-                {statistics?.byDistrict?.length > 0 && (
-                  <div className="stat-block card" style={{ marginTop: 'var(--spacing-lg)' }}>
-                    <h3>{t('moderator.casesByDistrict')}</h3>
-                    <div className="stat-list">
-                      {statistics.byDistrict.slice(0, 8).map((item) => (
-                        <div key={item._id} className="stat-item">
-                          <span className="stat-label">{item._id || t('caseDetail.notAvailable')}</span>
-                          <div className="stat-bar-wrapper">
-                            <div
-                              className="stat-bar"
-                              style={{ width: `${(item.count / Math.max(...statistics.byDistrict.map(i => i.count))) * 100}%` }}
-                            />
-                            <span className="stat-value">{item.count}</span>
-                          </div>
+                      <div className="chart-legend chart-legend-quantity">
+                        <span className="chart-legend-title">{t('moderator.legendByQuantity')}</span>
+                        <div className="chart-legend-gradient">
+                          <span className="chart-legend-gradient-label">{t('moderator.quantityFew')}</span>
+                          <div className="chart-legend-gradient-bar" style={{ background: `linear-gradient(90deg, ${COLOR_LOW}, ${COLOR_HIGH})` }} />
+                          <span className="chart-legend-gradient-label">{t('moderator.quantityMany')}</span>
                         </div>
-                      ))}
+                        <div className="chart-legend-gradient-values">
+                          <span>{minD}</span>
+                          <span>{maxD}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </>
           )}

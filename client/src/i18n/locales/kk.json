@@ -128,6 +128,12 @@
     "statistics": "Статистика",
     "casesByYear": "Жылдар бойынша істер",
     "casesByDistrict": "Аудандар бойынша істер",
+    "countLabel": "Саны",
+    "legendByYear": "Жылдар бойынша түстер",
+    "legendByDistrict": "Аудандар бойынша түстер",
+    "legendByQuantity": "Түс санына байланысты",
+    "quantityFew": "Аз",
+    "quantityMany": "Көп",
     "casesByMonth": "Айлар бойынша істер",
     "recentCases": "Соңғы өзгерістер",
     "totalCases": "Барлық істер",
@@ -149,6 +155,10 @@
     "personName": "Аты-жөні",
     "personNamePlaceholder": "Адамның аты-жөнін енгізіңіз",
     "totalMemories": "Барлық естеліктер",
+    "myEntries": "Менің жазбаларым",
+    "totalInDatabase": "Барлығы базда",
+    "showMyEntriesOnly": "Тек менің жазбаларым",
+    "recordNumber": "№",
     "typeLabel": "Түрі",
     "typeCase": "Іс",
     "typeMemory": "Естелік",
@@ -279,7 +289,8 @@
   },
   "archive": {
     "foundCases": "{{count}} жазба табылды",
-    "foundCase": "{{count}} жазба табылды"
+    "foundCase": "{{count}} жазба табылды",
+    "showingRange": "{{from}}–{{to}} / {{total}}"
   },
   "contact": {
     "appreciateText": "Мұрағатымызды жақсарту үшін пікірлеріңіз бен ұсыныстарыңызды бағалаймыз.",

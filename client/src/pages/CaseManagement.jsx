@@ -49,7 +49,8 @@ const CaseManagement = () => {
     status: 'all',
     type: initialType,
     sortBy: 'createdAt',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    createdByMe: false
   });
 
   // Pagination
@@ -85,11 +86,15 @@ const CaseManagement = () => {
   const fetchCases = async () => {
     setLoading(true);
     try {
+      const { createdByMe, ...restFilters } = filters;
       const params = {
-        ...filters,
+        ...restFilters,
         page: pagination.page,
         pageSize: pagination.pageSize
       };
+      if (createdByMe && user?.id) {
+        params.createdBy = user.id;
+      }
 
       // Remove empty filters; keep status='all' so backend returns both draft and published
       Object.keys(params).forEach(key => {
@@ -127,7 +132,8 @@ const CaseManagement = () => {
       status: 'all',
       type: 'all',
       sortBy: 'createdAt',
-      sortOrder: 'desc'
+      sortOrder: 'desc',
+      createdByMe: false
     });
     setPagination(prev => ({ ...prev, page: 1 }));
   };
@@ -322,6 +328,16 @@ const CaseManagement = () => {
                 <FunnelFill size={18} />
                 {t('moderator.filterBy')}
               </button>
+
+              {/* Show only my entries */}
+              <label className="filter-checkbox my-entries-only">
+                <input
+                  type="checkbox"
+                  checked={!!filters.createdByMe}
+                  onChange={(e) => handleFilterChange('createdByMe', e.target.checked)}
+                />
+                <span>{t('moderator.showMyEntriesOnly')}</span>
+              </label>
             </div>
 
             <div className="toolbar-right">
@@ -458,6 +474,29 @@ const CaseManagement = () => {
             </div>
           )}
 
+          {/* Pagination — top */}
+          {!loading && cases.length > 0 && pagination.totalPages > 1 && (
+            <div className="pagination pagination-top">
+              <button
+                className="btn btn-secondary"
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+              >
+                {t('common.previous')}
+              </button>
+              <span className="page-info">
+                {t('common.page')} {pagination.page} {t('common.of')} {pagination.totalPages}
+              </span>
+              <button
+                className="btn btn-secondary"
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+              >
+                {t('common.next')}
+              </button>
+            </div>
+          )}
+
           {/* Bulk Actions Bar */}
           {selectedCases.length > 0 && (
             <div className="bulk-actions-bar">
@@ -508,6 +547,8 @@ const CaseManagement = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
+              page={pagination.page}
+              pageSize={pagination.pageSize}
             />
           ) : (
             <CasesGrid

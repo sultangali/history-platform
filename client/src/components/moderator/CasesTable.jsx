@@ -11,9 +11,12 @@ const CasesTable = ({
   onPreview, 
   onEdit, 
   onDelete,
-  onStatusChange 
+  onStatusChange,
+  page = 1,
+  pageSize = 20
 }) => {
   const { t } = useTranslation();
+  const rowNumberStart = (page - 1) * pageSize;
 
   const getStatusBadge = (status) => {
     const value = status || 'published';
@@ -43,10 +46,13 @@ const CasesTable = ({
                 onChange={onSelectAll}
               />
             </th>
+            <th className="num-col">{t('moderator.recordNumber')}</th>
             <th>{t('form.caseTitle')}</th>
             <th>{t('moderator.typeLabel')}</th>
             <th>{t('cases.caseNumber')}</th>
-            <th>{t('form.year')}</th>
+            <th style={{
+              width: '50px'
+            }}>{t('form.year')}</th>
             <th>{t('form.district')}</th>
             <th>{t('moderator.createdBy')}</th>
             <th>{t('moderator.status')}</th>
@@ -57,12 +63,12 @@ const CasesTable = ({
         <tbody>
           {cases.length === 0 ? (
             <tr>
-              <td colSpan="10" className="empty-state">
+              <td colSpan="11" className="empty-state">
                 {t('moderator.noResults')}
               </td>
             </tr>
           ) : (
-            cases.map((caseItem) => (
+            cases.map((caseItem, index) => (
               <tr key={caseItem._id}>
                 <td className="checkbox-col">
                   <input
@@ -71,6 +77,7 @@ const CasesTable = ({
                     onChange={() => onSelectCase(caseItem._id)}
                   />
                 </td>
+                <td className="num-col">{rowNumberStart + index + 1}</td>
                 <td className="title-col">
                   <span className="case-title">
                     {caseItem.type === 'memory' ? (caseItem.personName || caseItem.title) : caseItem.title}

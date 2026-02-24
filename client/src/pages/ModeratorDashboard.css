@@ -114,6 +114,17 @@
   line-height: 1.2;
 }
 
+.stat-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 var(--spacing-xs);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.stat-meta-item strong {
+  color: var(--text-primary);
+}
 .stat-info p.stat-label {
   margin: 0;
   color: var(--text-secondary);
@@ -416,17 +427,188 @@
   text-align: right;
 }
 
-/* Bar Chart Styles */
-.chart-container {
+/* Bar Chart with axes and grid */
+.stat-chart-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.stat-chart-year {
+  position: relative;
+}
+
+.chart-y-axis-label {
+  position: absolute;
+  top: 2.6rem;
+  left: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transform: rotate(-90deg);
+  transform-origin: left top;
+  width: 120px;
+  text-align: center;
+}
+
+.stat-chart-card .chart-with-axes {
+  display: flex;
+  gap: 12px;
+  margin-top: 2rem;
+  padding-left: 1.5rem;
+  align-items: stretch;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 10px 28px 0;
+  min-width: 32px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.chart-y-tick {
+  flex-shrink: 0;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.chart-grid-h {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  pointer-events: none;
+}
+
+.chart-grid-line-h {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.chart-grid-v {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  pointer-events: none;
+}
+
+.chart-grid-line-v {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  transform: translateX(-50%);
+}
+
+.chart-x-axis-label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 8px;
+  padding-left: 48px;
+}
+
+.chart-legend {
   margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+.chart-legend-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.chart-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-lg);
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.chart-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.chart-legend-items-district {
+  gap: var(--spacing-xs) var(--spacing-md);
+}
+
+.chart-legend-items-district .chart-legend-item {
+  font-size: 0.75rem;
+}
+
+.chart-legend-quantity .chart-legend-gradient {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.chart-legend-gradient-bar {
+  flex: 1;
+  height: 12px;
+  border-radius: 6px;
+  min-width: 80px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chart-legend-gradient-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 32px;
+}
+
+.chart-legend-gradient-values {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding: 0 2px;
+  font-size: 0.7rem;
+  color: var(--text-light);
 }
 
 .bar-chart {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
-  height: 250px;
-  padding: var(--spacing-md) 0;
+  gap: 8px;
+  padding: 0 0 28px 0;
+  position: relative;
+  z-index: 1;
 }
 
 .chart-bar-wrapper {
@@ -434,46 +616,49 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  min-width: 40px;
+  gap: 6px;
+  min-width: 28px;
 }
 
 .chart-bar-container {
-  flex: 1;
   width: 100%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .chart-bar {
   width: 100%;
-  background: linear-gradient(180deg, var(--accent-light), var(--accent-color));
+  max-width: 44px;
+  min-height: 6px;
+  background: linear-gradient(180deg, #d4a574 0%, #9a7220 50%, #7a5a18 100%);
   border-radius: 6px 6px 0 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 6px;
-  min-height: 30px;
+  padding-top: 4px;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(139, 105, 20, 0.25);
 }
 
 .chart-bar:hover {
-  opacity: 0.8;
-  transform: translateY(-4px);
+  opacity: 0.95;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(139, 105, 20, 0.35);
 }
 
 .bar-value {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .chart-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   text-align: center;
   font-weight: 500;
@@ -481,6 +666,143 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* District chart */
+.stat-chart-district .stat-list {
+  gap: 0;
+}
+
+.stat-district-header {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) 1fr 44px;
+  gap: var(--spacing-md);
+  align-items: center;
+  padding: var(--spacing-sm) 0 var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  border-bottom: 2px solid var(--border-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-district-col-label {
+  grid-column: 1;
+}
+
+.stat-district-col-value {
+  grid-column: 3;
+  text-align: right;
+}
+
+.stat-list-with-grid {
+  position: relative;
+  padding: var(--spacing-sm) 0 var(--spacing-xl);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.stat-list-with-grid::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent calc(100% - 56px),
+    rgba(0,0,0,0.02) calc(100% - 56px)
+  );
+  pointer-events: none;
+  border-radius: var(--border-radius);
+}
+
+.stat-item-district {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) 1fr 44px;
+  gap: var(--spacing-md);
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  min-height: 48px;
+}
+
+.stat-item-district:last-child {
+  border-bottom: none;
+}
+
+.stat-item-district .stat-label {
+  flex: 0 0 180px;
+  max-width: 40%;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.stat-item-district .stat-bar-wrapper {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.stat-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  min-height: 28px;
+}
+
+.stat-bar {
+  height: 26px;
+  background: linear-gradient(90deg, #9a7220 0%, #c49a6c 50%, #d4a574 100%);
+  border-radius: 6px;
+  min-width: 24px;
+  transition: width 0.25s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(139, 105, 20, 0.2);
+}
+
+.stat-value {
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 30px;
+  text-align: right;
+}
+
+.stat-bar-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 52px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.stat-item-district .stat-bar-bg {
+  right: 0;
+}
+
+.stat-list-with-grid .stat-bar-wrapper {
+  min-height: 36px;
+  padding-right: 8px;
+}
+
+.stat-list-with-grid .stat-bar {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.stat-list-with-grid .stat-value {
+  min-width: 40px;
+  z-index: 1;
+  font-size: 0.95rem;
+  flex-shrink: 0;
 }
 
 /* Badge variants */

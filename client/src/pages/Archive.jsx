@@ -9,9 +9,11 @@ import { formatDate } from '../utils/dateFormat';
 import CaseCard from '../components/cases/CaseCard';
 import './Archive.css';
 
+const PAGE_SIZE = 20;
+
 const Archive = () => {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
@@ -24,6 +26,12 @@ const Archive = () => {
     type: searchParams.get('type') || 'all'
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: parseInt(searchParams.get('page'), 10) || 1,
+    pageSize: PAGE_SIZE,
+    total: 0,
+    totalPages: 0
+  });
 
   const getRowTitle = (caseItem) => {
     if (caseItem.type === 'memory') return caseItem.personName || caseItem.title || '-';
@@ -32,13 +40,15 @@ const Archive = () => {
 
   useEffect(() => {
     fetchCases();
-  }, []);
+  }, [filters, pagination.page, pagination.pageSize]);
 
   const fetchCases = async () => {
     setLoading(true);
     try {
       const params = {
-        status: 'published' // Only show published cases in public archive
+        status: 'published',
+        page: pagination.page,
+        pageSize: pagination.pageSize
       };
       if (filters.search) params.search = filters.search;
       if (filters.location) params.location = filters.location;
@@ -48,18 +58,42 @@ const Archive = () => {
       if (filters.type && filters.type !== 'all') params.type = filters.type;
 
       const response = await casesAPI.getAll(params);
-      setCases(response.data.cases || []);
+      const data = response.data;
+      setCases(data.cases || []);
+      setPagination(prev => ({
+        ...prev,
+        total: data.total ?? 0,
+        totalPages: data.totalPages ?? 0
+      }));
     } catch (error) {
       console.error('Error fetching cases:', error);
       setCases([]);
+      setPagination(prev => ({ ...prev, total: 0, totalPages: 0 }));
     } finally {
       setLoading(false);
     }
   };
 
+  const handlePageChange = (newPage) => {
+    const page = Math.max(1, Math.min(newPage, pagination.totalPages));
+    setPagination(prev => ({ ...prev, page }));
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (page === 1) next.delete('page');
+      else next.set('page', String(page));
+      return next;
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchCases();
+    setPagination(prev => ({ ...prev, page: 1 }));
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('page');
+      return next;
+    });
   };
 
   const handleFilterChange = (key, value) => {
@@ -67,7 +101,12 @@ const Archive = () => {
   };
 
   const handleApplyFilters = () => {
-    fetchCases();
+    setPagination(prev => ({ ...prev, page: 1 }));
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('page');
+      return next;
+    });
     setShowFilters(false);
   };
 
@@ -79,6 +118,12 @@ const Archive = () => {
       yearFrom: '',
       yearTo: '',
       type: 'all'
+    });
+    setPagination(prev => ({ ...prev, page: 1 }));
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('page');
+      return next;
     });
     setTimeout(() => fetchCases(), 100);
   };
@@ -203,9 +248,38 @@ const Archive = () => {
             </div>
           ) : (
             <>
+              {pagination.totalPages > 1 && (
+                <div className="archive-pagination pagination-top">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                  >
+                    {t('common.previous')}
+                  </button>
+                  <span className="page-info">
+                    {t('common.page')} {pagination.page} {t('common.of')} {pagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.totalPages}
+                  >
+                    {t('common.next')}
+                  </button>
+                </div>
+              )}
               <div className="archive-toolbar">
                 <p className="results-count text-muted">
-                  {t(cases.length === 1 ? 'archive.foundCase' : 'archive.foundCases', { count: cases.length })}
+                  {pagination.totalPages > 1
+                    ? t('archive.showingRange', {
+                        from: (pagination.page - 1) * pagination.pageSize + 1,
+                        to: Math.min(pagination.page * pagination.pageSize, pagination.total),
+                        total: pagination.total
+                      })
+                    : t(pagination.total === 1 ? 'archive.foundCase' : 'archive.foundCases', { count: pagination.total })}
                 </p>
                 <div className="archive-view-toggle">
                   <button
@@ -277,6 +351,29 @@ const Archive = () => {
                       <CaseCard caseData={caseItem} />
                     </div>
                   ))}
+                </div>
+              )}
+              {!loading && cases.length > 0 && pagination.totalPages > 1 && (
+                <div className="archive-pagination">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                  >
+                    {t('common.previous')}
+                  </button>
+                  <span className="page-info">
+                    {t('common.page')} {pagination.page} {t('common.of')} {pagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.totalPages}
+                  >
+                    {t('common.next')}
+                  </button>
                 </div>
               )}
             </>

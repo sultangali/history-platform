@@ -45,6 +45,14 @@
   text-align: center;
 }
 
+.num-col {
+  width: 44px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
 .checkbox-col input[type="checkbox"] {
   cursor: pointer;
   width: 18px;
