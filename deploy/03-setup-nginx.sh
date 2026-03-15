@@ -17,12 +17,12 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Конфигурация
-APP_NAME="history-platform"
-APP_DIR="/var/www/history-platform"
-STATIC_DIR="/var/www/html/history-platform"
+APP_NAME="history"
+APP_DIR="/var/www/history"
+STATIC_DIR="/var/www/html/history"
 NGINX_AVAILABLE="/etc/nginx/sites-available"
 NGINX_ENABLED="/etc/nginx/sites-enabled"
-DEFAULT_SERVER_IP="34.51.218.216"
+DEFAULT_SERVER_IP="34.51.246.220"
 
 # Функции логирования
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }

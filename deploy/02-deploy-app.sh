@@ -26,7 +26,7 @@ APP_DIR="/var/www/history-platform"
 GIT_REPO="git@github.com:sultangali/history-platform.git"
 GIT_BRANCH="main"
 NODE_ENV="production"
-DEFAULT_SERVER_IP="34.51.218.216"
+DEFAULT_SERVER_IP="34.51.246.220"
 
 # Функции логирования
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -300,8 +300,8 @@ main() {
     echo ""
     
     check_root
-    check_ssh_key
-    clone_or_update_repo
+   # check_ssh_key
+   # clone_or_update_repo
     install_server_deps
     build_client
     setup_env
